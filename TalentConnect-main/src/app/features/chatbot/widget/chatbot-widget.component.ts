@@ -1,96 +1,136 @@
-import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChatbotAdapter } from '../../../data-access/api/adapters/chatbot.adapter';
-import { SessionStore } from '../../../core/state/session.store';
-
-interface ChatMessage {
-  role: 'bot' | 'user';
-  text: string;
-  sources?: string[];
-}
+import { ChatMessage, ChatResponse } from '../../../data-access/models/chatbot.models';
+import { AuthFacade } from '../../../core/services/auth.facade';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-chatbot-widget',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
     MatFormFieldModule,
-    MatChipsModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
   ],
   templateUrl: './chatbot-widget.component.html',
-  styleUrls: ['./chatbot-widget.component.css'],
+  styleUrl: './chatbot-widget.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatbotWidgetComponent {
+export class ChatbotWidgetComponent implements OnInit, AfterViewChecked {
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+
   private readonly chatbotAdapter = inject(ChatbotAdapter);
-  private readonly sessionStore = inject(SessionStore);
+  private readonly authFacade = inject(AuthFacade);
+  private readonly toast = inject(ToastService);
 
-  protected readonly isOpen = signal(false);
-  protected readonly question = signal('');
-  protected readonly sending = signal(false);
-  protected readonly suggestions = signal([
-    'Montre-moi les offres Angular',
-    'Comment recommander un profil ?',
-    'Comprendre les statuts',
-  ]);
-  protected readonly messages = signal<ChatMessage[]>([
-    {
-      role: 'bot',
-      text: 'Bonjour, je suis l’assistant TalentConnect. Je peux vous aider sur les postes, la mobilité interne, la cooptation et le suivi des candidatures.',
-      sources: ['Assistant TalentConnect'],
-    },
-  ]);
+  protected readonly messages = signal<ChatMessage[]>([]);
+  protected readonly messageControl = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  protected readonly isLoading = signal(false);
+  protected readonly userId = signal<string | null>(null);
 
-  constructor() {
-    this.loadHistory();
+  ngOnInit(): void {
+    this.userId.set(this.authFacade.user()?.id ?? null);
+    if (this.userId()) {
+      this.loadChatHistory();
+    } else {
+      this.toast.open('Impossible de charger le chatbot: utilisateur non identifié.', 'OK', { duration: 5000 });
+    }
   }
 
-  protected toggle(): void {
-    this.isOpen.update((value) => !value);
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
   }
 
-  protected sendMessage(value?: string): void {
-    const payload = (value ?? this.question()).trim();
-    if (!payload) return;
+  private scrollToBottom(): void {
+    try {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      // Handle error if scrollContainer is not available
+    }
+  }
 
-    this.messages.update((items) => [...items, { role: 'user', text: payload }]);
-    this.question.set('');
-    this.sending.set(true);
+  loadChatHistory(): void {
+    const currentUserId = this.userId();
+    if (!currentUserId) return;
 
-    this.chatbotAdapter.ask(payload).subscribe((reply) => {
-      this.messages.update((items) => [
-        ...items,
-        { role: 'bot', text: reply.answer, sources: reply.sources },
-      ]);
-      this.suggestions.set(reply.suggestions);
-      this.sending.set(false);
+    this.isLoading.set(true);
+    this.chatbotAdapter.getHistory(currentUserId).subscribe({
+      next: (historyPage) => {
+        this.messages.set(historyPage.content.reverse()); // Display in chronological order
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load chat history', err);
+        this.toast.open('Erreur lors du chargement de l\'historique du chat.', 'OK', { duration: 3000 });
+        this.isLoading.set(false);
+      },
     });
   }
 
-  private loadHistory(): void {
-    const user = this.sessionStore.user();
-    if (!user?.id) return;
+  sendMessage(): void {
+    const userMessageText = this.messageControl.value.trim();
+    if (!userMessageText || this.isLoading()) {
+      return;
+    }
 
-    this.chatbotAdapter.getHistory(`user-${user.id}`, 0, 20).subscribe((history) => {
-      if (!history.length) return;
-      this.messages.set([
-        {
-          role: 'bot',
-          text: 'Historique chargé depuis le backend. Vous pouvez reprendre la conversation.',
-          sources: ['chatbot-service'],
-        },
-        ...history.map((item) => ({ role: item.role, text: item.text })),
-      ]);
+    const currentUserId = this.userId();
+    if (!currentUserId) {
+      this.toast.open('Utilisateur non identifié. Veuillez vous reconnecter.', 'OK', { duration: 5000 });
+      return;
+    }
+
+    const userMessage: ChatMessage = {
+      id: `temp-${Date.now()}`, // Temporary ID
+      userId: currentUserId,
+      sender: 'user',
+      text: userMessageText,
+      timestamp: new Date().toISOString(),
+    };
+
+    this.messages.update((msgs) => [...msgs, userMessage]);
+    this.messageControl.disable();
+    this.isLoading.set(true);
+
+    this.chatbotAdapter.ask(userMessageText).subscribe({
+      next: (response: ChatResponse) => {
+        const botMessage: ChatMessage = {
+          id: response.chatMessage?.id || `bot-${Date.now()}`,
+          userId: currentUserId,
+          sender: 'bot',
+          text: response.answer,
+          timestamp: new Date().toISOString(),
+          intent: response.intent,
+          sources: response.sources,
+        };
+        this.messages.update((msgs) => [...msgs, botMessage]);
+        this.messageControl.setValue('');
+        this.messageControl.enable();
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to send message to chatbot', err);
+        this.toast.open('Erreur lors de l\'envoi du message au chatbot.', 'OK', { duration: 3000 });
+        this.messageControl.enable();
+        this.isLoading.set(false);
+      },
     });
+  }
+
+  sendSuggestion(suggestion: string): void {
+    this.messageControl.setValue(suggestion);
+    this.sendMessage();
   }
 }

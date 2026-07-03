@@ -199,6 +199,16 @@ export const appRoutes: Routes = [
                 (m) => m.AdminSettingsPageComponent,
               ),
           },
+          {
+            path: 'grafana',
+            loadComponent: () =>
+              import('./features/admin/grafana-dashboard/grafana-dashboard.component').then(
+                (m) => m.GrafanaDashboardComponent,
+              ),
+            data: {
+              grafanaEmbedUrl: 'YOUR_GRAFANA_EMBED_URL_HERE' // REMPLACEZ CECI PAR VOTRE VRAIE URL D'EMBED GRAFANA
+            }
+          },
         ],
       },
       {

@@ -21,6 +21,7 @@ import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 import { JobsAdapter } from '../../../data-access/api/adapters/jobs.adapter';
 import { JobOffer } from '../../../data-access/models/portal.models';
@@ -49,6 +50,7 @@ import { HrJobDialogComponent } from './hr-job-dialog.component';
     MatSortModule,
     MatTooltipModule,
     MatDialogModule,
+    MatMenuModule,
     StatusChipComponent,
     SkeletonListComponent,
     EmptyStateComponent,
@@ -114,16 +116,44 @@ import { HrJobDialogComponent } from './hr-job-dialog.component';
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Lieu</th>
                 <td mat-cell *matCellDef="let row">{{ row.location }}</td>
               </ng-container>
-              <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
-                <td mat-cell *matCellDef="let row">
-                  <app-status-chip [status]="row.status"></app-status-chip>
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="publishedAt">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Publi&eacute; le</th>
-                <td mat-cell *matCellDef="let row">{{ row.publishedAt | date: 'dd/MM/yyyy' }}</td>
-              </ng-container>
+               <ng-container matColumnDef="status">
+                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+                 <td mat-cell *matCellDef="let row" class="status-cell">
+                   <button
+                     mat-button
+                     [matMenuTriggerFor]="statusMenu"
+                     class="status-button"
+                     [class.status-draft]="row.status === 'DRAFT'"
+                     [class.status-open]="row.status === 'OPEN'"
+                     [class.status-closed]="row.status === 'CLOSED'"
+                   >
+                     {{ row.status === 'DRAFT' ? 'Brouillon' : (row.status === 'OPEN' ? 'Ouvert' : 'Fermé') }}
+                     <mat-icon>arrow_drop_down</mat-icon>
+                   </button>
+                   <mat-menu #statusMenu="matMenu">
+                     <button mat-menu-item (click)="updateJobStatus(row.id, 'DRAFT')" [disabled]="row.status === 'DRAFT'">
+                       <mat-icon>draft</mat-icon>
+                       <span>Brouillon</span>
+                     </button>
+                     <button mat-menu-item (click)="updateJobStatus(row.id, 'OPEN')" [disabled]="row.status === 'OPEN'">
+                       <mat-icon>public</mat-icon>
+                       <span>Ouvert</span>
+                     </button>
+                     <button mat-menu-item (click)="updateJobStatus(row.id, 'CLOSED')" [disabled]="row.status === 'CLOSED'">
+                       <mat-icon>block</mat-icon>
+                       <span>Fermé</span>
+                     </button>
+                   </mat-menu>
+                 </td>
+               </ng-container>
+               <ng-container matColumnDef="publishedAt">
+                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Publié le</th>
+                 <td mat-cell *matCellDef="let row">{{ row.publishedAt | date: 'dd/MM/yyyy' }}</td>
+               </ng-container>
+               <ng-container matColumnDef="closingAt">
+                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Clôture</th>
+                 <td mat-cell *matCellDef="let row">{{ row.closingAt ? (row.closingAt | date: 'dd/MM/yyyy') : '-' }}</td>
+               </ng-container>
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let row" class="actions-cell">
@@ -210,6 +240,36 @@ import { HrJobDialogComponent } from './hr-job-dialog.component';
         justify-content: flex-end;
         padding-right: 8px !important;
       }
+      .status-cell {
+        padding: 0 !important;
+      }
+      .status-button {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 12px !important;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        overflow: hidden;
+      }
+      .status-button mat-icon {
+        font-size: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+      }
+      .status-draft {
+        background: rgba(245, 158, 11, 0.12) !important;
+        color: #b45309 !important;
+      }
+      .status-open {
+        background: rgba(34, 197, 94, 0.12) !important;
+        color: #15803d !important;
+      }
+      .status-closed {
+        background: rgba(239, 68, 68, 0.12) !important;
+        color: #b91c1c !important;
+      }
       @media (max-width: 900px) {
         .head-row {
           flex-direction: column;
@@ -239,6 +299,7 @@ export class HrJobsPageComponent implements OnInit, AfterViewInit {
     'location',
     'status',
     'publishedAt',
+    'closingAt',
     'actions',
   ];
 
@@ -388,17 +449,46 @@ export class HrJobsPageComponent implements OnInit, AfterViewInit {
     // Get the current job to preserve its data
     const currentJob = this.allJobs.find((j) => j.id === id);
     if (!currentJob) return;
-    
-    // Use updateJob with status CLOSED to properly close the offer
-    this.jobsAdapter.updateJob(id, { ...currentJob, status: 'CLOSED' }).subscribe({
+
+     // Use updateJob with status CLOSED - send the full job payload
+     // This ensures all required fields are sent to the backend
+     this.jobsAdapter.updateJob(id, { ...currentJob, status: 'CLOSED' }).subscribe({
+       next: (updated) => {
+         this.jobsAdapter.refreshCache();
+         this.allJobs = this.allJobs.map((j) => (j.id === id ? updated : j));
+         // Force table refresh
+         this.dataSource.data = [...this.allJobs];
+         this.applyStatusFilter(this.statusFilterCtrl.value);
+         this.toast.open('Offre clôturée', '', { duration: 2500 });
+       },
+      error: (err) => {
+        console.error('Error closing job:', err);
+        this.toast.open('Impossible de clôturer cette offre.', 'OK', { duration: 3000 });
+      },
+    });
+  }
+
+  protected updateJobStatus(id: string, newStatus: string): void {
+    const currentJob = this.allJobs.find((j) => j.id === id);
+    if (!currentJob) return;
+
+    // Use updateJob (PUT) instead of patchStatus which causes 500 error
+    this.jobsAdapter.updateJob(id, { ...currentJob, status: newStatus as any }).subscribe({
       next: (updated) => {
         this.jobsAdapter.refreshCache();
         this.allJobs = this.allJobs.map((j) => (j.id === id ? updated : j));
+        // Force table refresh
+        this.dataSource.data = [...this.allJobs];
         this.applyStatusFilter(this.statusFilterCtrl.value);
-        this.toast.open('Offre cl\u00f4tur\u00e9e', '', { duration: 2500 });
+        const statusLabel = newStatus === 'DRAFT' ? 'Brouillon' : (newStatus === 'OPEN' ? 'Ouvert' : 'Fermé');
+        this.toast.open(`Statut mis à jour: ${statusLabel}`, '', { duration: 2500 });
       },
-      error: () => {
-        this.toast.open('Impossible de cl\u00f4turer cette offre.', 'OK', { duration: 3000 });
+      error: (err: { status?: number }) => {
+        console.error('Error updating job status:', err);
+        const msg = err.status === 400
+          ? 'Statut invalide. Veuillez vérifier votre sélection.'
+          : 'Impossible de mettre à jour le statut.';
+        this.toast.open(msg, 'OK', { duration: 4000 });
       },
     });
   }

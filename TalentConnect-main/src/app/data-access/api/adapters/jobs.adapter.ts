@@ -141,19 +141,42 @@ function toBackendSeniority(
 }
 
 function toFrontendJob(job: BackendJobOffer): JobOffer {
-  const publicationDate = job.publishedAt ?? job.createdAt ?? new Date().toISOString();
-  // Preserve explicit backend status when provided. Otherwise infer status from legacy fields:
-  // - published === true  -> OPEN
-  // - published === false and closingAt in the past -> CLOSED
-  // - otherwise -> DRAFT
+  // DEBUG: Log what backend returns
+  console.log('toFrontendJob DEBUG:', {
+    id: job.id,
+    status: job.status,
+    published: job.published,
+    publishedAt: job.publishedAt,
+    closingAt: job.closingAt,
+    createdAt: job.createdAt,
+  });
+
+  // Use actual publishedAt from backend when available; otherwise derive from createdAt
+  const publishedDate = job.publishedAt ?? job.createdAt ?? new Date().toISOString();
+  // Use actual closingAt from backend when available; default to empty string
+  const closingDate = job.closingAt ?? '';
+
   let status: JobOffer['status'];
   if (job.status) {
     status = job.status;
+    // Correction manuelle : si le statut est OPEN mais que la date de fin est passée
+    if (status === 'OPEN' && job.closingAt) {
+      if (Date.parse(job.closingAt) < Date.now()) {
+        status = 'CLOSED';
+      }
+    }
   } else {
     // Derive status from legacy fields: prefer published flag, then publishedAt/closingAt timestamps.
     const now = Date.now();
     const publishedAtTs = job.publishedAt ? Date.parse(job.publishedAt) : NaN;
     const closingAtTs = job.closingAt ? Date.parse(job.closingAt) : NaN;
+
+    console.log('toFrontendJob STATUS DERIVATION:', {
+      now,
+      publishedAtTs,
+      closingAtTs,
+      'closingAtTs < now': closingAtTs < now,
+    });
 
     // If backend explicitly set published boolean -> OPEN when true
     if (job.published) {
@@ -175,6 +198,8 @@ function toFrontendJob(job: BackendJobOffer): JobOffer {
       status = 'DRAFT';
     }
   }
+
+  console.log('toFrontendJob FINAL STATUS:', status);
   return {
     id: String(job.id),
     title: job.title,
@@ -186,27 +211,56 @@ function toFrontendJob(job: BackendJobOffer): JobOffer {
     description: job.description,
     requirements: job.requirements ?? [],
     tags: job.tags ?? [],
-    publishedAt: publicationDate,
-    closingAt: job.closingAt ?? '',
+    publishedAt: publishedDate,
+    closingAt: closingDate,
     hiringManager: job.hiringManager ?? '',
     recommendedScore: undefined,
   };
 }
 
 function toBackendJobPayload(job: Partial<JobOffer>): BackendCreateOrUpdateJob {
-  // Backend calculates status automatically based on published and closingAt:
-  // - published=false -> DRAFT
-  // - published=true + closingAt in past -> CLOSED
-  // - published=true + closingAt in future/null -> OPEN
-
   const isClosed = job.status === 'CLOSED';
+  const isOpen = job.status === 'OPEN';
+  const isDraft = job.status === 'DRAFT';
+  const isArchived = job.status === 'ARCHIVED';
+  const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
 
-  // Si on veut clore l'offre, on s'assure que closingAt est bien dans le passé (ex: il y a 1 minute)
-  // pour éviter tout problème de comparaison stricte avec "now" côté backend.
   let closingAtValue = job.closingAt;
+  let publishedAtValue = job.publishedAt;
+  let publishedValue: boolean;
+
   if (isClosed) {
-    const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
+    // Pour que le backend considère l'offre comme CLOSED, il faut published=true et closingAt dans le passé.
+    // Important: préserver publishedAt original et définir closingAt dans le passé
     closingAtValue = oneMinuteAgo;
+    publishedValue = true; // Doit être true pour que le backend la considère comme CLOSED
+    // Assurer que publishedAt est défini pour le statut CLOSED
+    if (!publishedAtValue) {
+      publishedAtValue = new Date().toISOString();
+    }
+  } else if (isOpen) {
+    publishedValue = true; // Doit être true pour OPEN
+    // CORRECTION BUG: Si l'offre est PUBLIÉE mais que publishedAt n'est pas défini,
+    // on le définit à la date actuelle. Ceci évite que toFrontendJob utilise createdAt à la place.
+    if (!publishedAtValue) {
+      publishedAtValue = new Date().toISOString();
+    }
+  } else if (isDraft) {
+    publishedValue = false; // Doit être false pour DRAFT
+  } else if (isArchived) {
+    publishedValue = false; // ARCHIVED signifie non publié
+  } else {
+    publishedValue = false; // Défaut : non publié
+  }
+
+  // Log for debugging
+  if (isClosed) {
+    console.log('closeJob payload:', {
+      status: job.status,
+      closingAt: closingAtValue,
+      publishedAt: publishedAtValue,
+      published: publishedValue,
+    });
   }
 
   return {
@@ -219,12 +273,11 @@ function toBackendJobPayload(job: Partial<JobOffer>): BackendCreateOrUpdateJob {
     description: job.description ?? '',
     requirements: job.requirements ?? [],
     tags: job.tags ?? [],
-    // Pour être CLOSED, le backend attend published=true et closingAt < now
-    published: job.status === 'OPEN' || job.status === 'CLOSED',
-    publishedAt: job.publishedAt,
+    published: publishedValue,
+    publishedAt: publishedAtValue,
     closingAt: closingAtValue,
     hiringManager: job.hiringManager,
-    status: job.status as any // On passe aussi le status explicitement au cas où
+    status: job.status as any // Toujours envoyer le statut explicitement si le backend le supporte
   };
 }
 
@@ -348,14 +401,37 @@ export class JobsAdapter {
   }
 
   /** Change the status of a job (HR/Admin only) */
-  patchStatus(id: string, status: string): Observable<JobOffer> {
+  patchStatus(id: string, status: string, job?: JobOffer): Observable<JobOffer> {
     if (this.api.isMock) throw new Error('patchStatus not supported in mock mode');
+
+    // Build the payload based on the status being set
+    const statusPayload: any = { status };
+
+    // For CLOSED status, also set published=true and closingAt to the past
+    if (status === 'CLOSED') {
+      statusPayload.published = true;
+      statusPayload.closingAt = new Date(Date.now() - 60000).toISOString();
+      // Preserve publishedAt if available
+      if (job?.publishedAt) {
+        statusPayload.publishedAt = job.publishedAt;
+      }
+    }
+    // For OPEN status, set published=true
+    else if (status === 'OPEN') {
+      statusPayload.published = true;
+    }
+    // For DRAFT status, set published=false
+    else if (status === 'DRAFT') {
+      statusPayload.published = false;
+    }
+
     // Use PATCH to /admin/jobs/{id}/status endpoint
     // The backend may support this endpoint for status changes
     return this.api
-      .patchAt<BackendJobOffer>(this.api.jobsBase, `admin/jobs/${id}/status`, { status })
+      .patchAt<BackendJobOffer>(this.api.jobsBase, `admin/jobs/${id}/status`, statusPayload)
       .pipe(map((updated) => toFrontendJob(updated)));
   }
+
 
   refreshCache(): void {
     this.invalidate$.next();

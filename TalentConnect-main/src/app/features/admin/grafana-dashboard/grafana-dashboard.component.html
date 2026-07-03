@@ -1,0 +1,10 @@
+<div class="grafana-dashboard-container">
+  @if (safeGrafanaUrl) {
+    <iframe [src]="safeGrafanaUrl" frameborder="0" class="grafana-iframe"></iframe>
+  } @else {
+    <div class="placeholder-message">
+      <p>Veuillez configurer l'URL d'intégration Grafana.</p>
+      <p>Dans Grafana, allez sur votre tableau de bord, cliquez sur "Share" (Partager), puis "Embed" (Intégrer) et copiez l'URL de l'iframe.</p>
+    </div>
+  }
+</div>

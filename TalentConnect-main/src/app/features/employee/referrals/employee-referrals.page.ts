@@ -20,6 +20,7 @@ import { ToastService } from '../../../shared/services/toast.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SkillsCatalogService } from '../../../core/services/skills-catalog.service';
 import { ReferralsService } from '../../../core/services/referrals.service';
+import { ReferralsAdapter } from '../../../data-access/api/adapters/referrals.adapter';
 import { AlertsService } from '../../../core/services/alerts.service';
 import { SessionStore } from '../../../core/state/session.store';
 
@@ -740,6 +741,7 @@ export class EmployeeReferralsPageComponent {
   protected readonly store = inject(ReferralsService);
   private readonly alerts = inject(AlertsService);
   private readonly session = inject(SessionStore);
+  private readonly referralsAdapter = inject(ReferralsAdapter);
 
   protected readonly submitting = signal(false);
   protected readonly cvFileName = signal('');
@@ -796,38 +798,73 @@ export class EmployeeReferralsPageComponent {
     this.form.markAllAsTouched();
     if (this.form.invalid || this.selectedSkills().length === 0) return;
 
-    this.submitting.set(true);
+    // Validate status is not empty (status set by backend, but we validate form integrity)
     const v = this.form.getRawValue();
+    if (!v.firstName || !v.lastName || !v.email || !v.domain) {
+      this.toast.open('Tous les champs obligatoires doivent être remplis', 'OK', { duration: 3000 });
+      return;
+    }
 
-    setTimeout(() => {
-      this.store.add({
-        firstName: v.firstName,
-        lastName: v.lastName,
-        email: v.email,
-        phone: v.phone,
-        domain: v.domain,
-        skills: this.selectedSkills(),
-        cvFileName: this.cvFileName() || undefined,
-        comment: v.comment || undefined,
-        createdByUserId: this.session.user()?.id,
-      });
+    this.submitting.set(true);
 
-      this.alerts.push({
-        severity: 'success',
-        title: 'Recommandation soumise',
-        message: `${v.firstName} ${v.lastName} a été recommandé(e) avec succès.`,
-        deepLink: '/app/employee/referrals',
-      });
+    // Prepare API payload
+    const payload: Record<string, unknown> = {
+      candidateFullName: `${v.firstName} ${v.lastName}`,
+      candidateEmail: v.email,
+      candidatePhone: v.phone || '',
+      skills: this.selectedSkills(),
+    };
 
-      this.toast.open(
+    // Call API
+    this.referralsAdapter.createReferral(payload as any).subscribe({
+      next: (created) => {
+        // Also add to local store for immediate display
+        this.store.add({
+          firstName: v.firstName,
+          lastName: v.lastName,
+          email: v.email,
+          phone: v.phone,
+          domain: v.domain,
+          skills: this.selectedSkills(),
+          cvFileName: this.cvFileName() || undefined,
+          comment: v.comment || undefined,
+          createdByUserId: this.session.user()?.id,
+        });
+
+        this.alerts.push({
+          severity: 'success',
+          title: 'Recommandation soumise',
+          message: `${v.firstName} ${v.lastName} a été recommandé(e) avec succès.`,
+          deepLink: '/app/employee/referrals',
+        });
+
+        this.toast.open(
           `Recommandation pour ${v.firstName} ${v.lastName} créée avec succès !`,
           'Voir mes candidatures',
           { duration: 5000 },
         );
 
-      this.reset();
-      this.submitting.set(false);
-    }, 900);
+        this.reset();
+        this.submitting.set(false);
+      },
+      error: (err: any) => {
+        this.submitting.set(false);
+        console.error('Error creating referral:', err);
+
+        // Handle HTTP 400 error
+        if (err.status === 400) {
+          const errorMessage = err.error?.message || 'Validation échouée. Veuillez vérifier vos données.';
+          this.toast.open(errorMessage, 'OK', { duration: 4000 });
+          return;
+        }
+
+        // Handle other errors
+        const msg = err.status === 403
+          ? 'Vous n\'avez pas la permission de créer une recommandation.'
+          : 'Impossible de créer la recommandation. Veuillez réessayer.';
+        this.toast.open(msg, 'OK', { duration: 4000 });
+      },
+    });
   }
 
   protected reset(): void {

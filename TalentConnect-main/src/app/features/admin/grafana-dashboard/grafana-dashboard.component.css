@@ -1,0 +1,22 @@
+.grafana-dashboard-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--surface-raised);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.grafana-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.placeholder-message {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 20px;
+}

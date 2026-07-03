@@ -8,6 +8,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { ApiHttpService } from '../../../data-access/api/http/api-http.service';
+import { GrafanaPanelEmbedComponent } from '../../../shared/components/grafana-panel-embed/grafana-panel-embed.component'; // <-- NOUVEL IMPORT
 
 interface BackendAdminUser {
   id: number;
@@ -36,6 +37,7 @@ interface AdminStats {
     MatIconModule,
     MatButtonModule,
     MatProgressBarModule,
+    GrafanaPanelEmbedComponent, // <-- AJOUTER ICI
   ],
   template: `
     <div class="admin-dash">
@@ -130,6 +132,19 @@ interface AdminStats {
               ></div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- Nouvelle section pour les graphiques Grafana -->
+      <section class="panel">
+        <h3 class="panel-title"><mat-icon>insights</mat-icon> Surveillance du Backend</h3>
+        <p class="panel-sub">Statistiques clés de performance et d'utilisation des services.</p>
+        <div class="grafana-dashboard-container">
+          <!-- Remplacez 'YOUR_GRAFANA_EMBED_URL_HERE' par l'URL d'intégration de votre panneau Grafana -->
+          <app-grafana-panel-embed
+            [grafanaUrl]="'YOUR_GRAFANA_EMBED_URL_HERE'"
+            height="500px"
+          ></app-grafana-panel-embed>
         </div>
       </section>
 
@@ -414,6 +429,17 @@ interface AdminStats {
         width: 20px;
         height: 20px;
         flex-shrink: 0;
+      }
+      .grafana-dashboard-container {
+        width: 100%;
+        height: 500px; /* Ajustez la hauteur selon vos besoins */
+        margin-top: 16px;
+      }
+      .panel-sub {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: -8px;
+        margin-bottom: 16px;
       }
     `,
   ],
