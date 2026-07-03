@@ -1,0 +1,9 @@
+.not-found {
+  text-align: center;
+  padding: 2rem;
+}
+
+.not-found a {
+  color: #667eea;
+  text-decoration: none;
+}

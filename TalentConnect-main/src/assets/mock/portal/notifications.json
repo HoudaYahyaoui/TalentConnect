@@ -1,0 +1,20 @@
+[
+  {
+    "id": "notif-1",
+    "type": "info",
+    "title": "Entretien confirmé",
+    "message": "Votre entretien pour Lead Angular Engineer est planifié le 10 mai à 14h00.",
+    "createdAt": "2026-05-06T15:01:00Z",
+    "read": false,
+    "deepLink": "/app/employee/applications"
+  },
+  {
+    "id": "notif-2",
+    "type": "success",
+    "title": "Alerte recherche enregistrée",
+    "message": "Vous recevrez un rappel pour les postes Angular à Paris.",
+    "createdAt": "2026-05-04T11:45:00Z",
+    "read": true,
+    "deepLink": "/app/employee/saved-searches"
+  }
+]

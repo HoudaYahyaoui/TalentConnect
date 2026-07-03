@@ -1,0 +1,46 @@
+[
+  {
+    "id": "1",
+    "displayName": "Alice Johnson",
+    "email": "alice@example.com",
+    "password": "password123",
+    "role": "ROLE_CANDIDATE",
+    "permissions": ["view_offers", "apply_offer", "view_applications"],
+    "department": "Engineering",
+    "position": "Senior Developer",
+    "avatarUrl": "https://via.placeholder.com/150?text=Alice"
+  },
+  {
+    "id": "2",
+    "displayName": "Bob Dupont",
+    "email": "bob@example.com",
+    "password": "password123",
+    "role": "ROLE_HR",
+    "permissions": ["manage_candidates", "view_applications", "create_offers"],
+    "department": "Human Resources",
+    "position": "Recruitment Manager",
+    "avatarUrl": "https://via.placeholder.com/150?text=Bob"
+  },
+  {
+    "id": "3",
+    "displayName": "Charlie Admin",
+    "email": "admin@example.com",
+    "password": "password123",
+    "role": "ROLE_ADMIN",
+    "permissions": ["manage_users", "manage_roles", "view_audit_logs"],
+    "department": "IT",
+    "position": "System Administrator",
+    "avatarUrl": "https://via.placeholder.com/150?text=Charlie"
+  },
+  {
+    "id": "4",
+    "displayName": "Jean Dupont",
+    "email": "jean@example.com",
+    "password": "password123",
+    "role": "ROLE_CANDIDATE",
+    "permissions": ["view_offers", "apply_offer", "view_applications"],
+    "department": "Sales",
+    "position": "Sales Executive",
+    "avatarUrl": "https://via.placeholder.com/150?text=Jean"
+  }
+]

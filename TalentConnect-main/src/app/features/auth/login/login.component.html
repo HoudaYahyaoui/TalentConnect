@@ -1,0 +1,79 @@
+<div class="login-page">
+  <section class="login-panel">
+    <div class="brand-block">
+      <div class="brand-pill">TC</div>
+      <div>
+        <h1>TalentConnect</h1>
+        <p>Accès sécurisé à la plateforme interne de recrutement.</p>
+      </div>
+    </div>
+
+    <mat-card class="auth-card">
+      <div class="auth-header">
+        <h2>Connexion</h2>
+        <p>Connectez-vous avec votre compte d’entreprise.</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Adresse email</mat-label>
+          <input
+            matInput
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="votre.email@entreprise.com"
+          />
+          <mat-error *ngIf="loginForm.controls.email.invalid && loginForm.controls.email.touched"
+            >Email invalide</mat-error
+          >
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Mot de passe</mat-label>
+          <input
+            matInput
+            id="password"
+            [type]="hidePassword() ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="Votre mot de passe"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Afficher/masquer"
+            (click)="hidePassword.update((value) => !value)"
+          >
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error
+            *ngIf="loginForm.controls.password.invalid && loginForm.controls.password.touched"
+            >Mot de passe requis</mat-error
+          >
+        </mat-form-field>
+
+        <mat-checkbox formControlName="remember">Se souvenir de moi</mat-checkbox>
+
+        <div class="error-box" *ngIf="error()">{{ error() }}</div>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="login-button"
+          [disabled]="loading() || loginForm.invalid"
+        >
+          <ng-container *ngIf="loading(); else loginLabel">
+            <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+            Connexion...
+          </ng-container>
+          <ng-template #loginLabel>Se connecter</ng-template>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <a routerLink="/auth/forgot-password">Mot de passe oublié ?</a>
+      </div>
+    </mat-card>
+  </section>
+</div>

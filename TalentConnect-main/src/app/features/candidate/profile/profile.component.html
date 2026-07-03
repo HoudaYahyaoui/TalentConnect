@@ -1,0 +1,68 @@
+<section class="profile-page">
+  <!-- Profile Hero Card -->
+  <div class="profile-hero">
+    <div class="avatar-section">
+      <div class="avatar-circle">
+        {{ getInitials() }}
+      </div>
+      <div class="hero-info">
+        <h2 class="user-name">{{ profile()?.displayName || 'Utilisateur' }}</h2>
+        <p class="user-title">{{ profile()?.title || 'Collaborateur' }}</p>
+        <span class="role-badge">{{ getRoleLabel() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Grid -->
+  <div class="details-grid">
+    <!-- Contact Info -->
+    <div class="detail-card">
+      <h3 class="card-title">
+        <span class="card-icon">📧</span>
+        Informations de contact
+      </h3>
+      <div class="info-row">
+        <span class="info-label">Email</span>
+        <span class="info-value">{{ getEmail() }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Département</span>
+        <span class="info-value">{{ profile()?.department || '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Localisation</span>
+        <span class="info-value">{{ profile()?.location || '—' }}</span>
+      </div>
+    </div>
+
+    <!-- Professional Info -->
+    <div class="detail-card">
+      <h3 class="card-title">
+        <span class="card-icon">💼</span>
+        Profil professionnel
+      </h3>
+      <div class="info-row">
+        <span class="info-label">Expérience</span>
+        <span class="info-value">{{ profile()?.experienceYears ?? 0 }} ans</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Compétences</span>
+        <span class="info-value skills-value">
+          @if (profile()?.skills?.length) {
+            @for (skill of profile()!.skills!; track skill) {
+              <span class="skill-tag">{{ skill }}</span>
+            }
+          } @else {
+            <span class="no-data">Non renseigné</span>
+          }
+        </span>
+      </div>
+      @if (getLanguages().length) {
+        <div class="info-row">
+          <span class="info-label">Langues</span>
+          <span class="info-value">{{ getLanguages().join(', ') }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</section>

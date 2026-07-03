@@ -1,0 +1,18 @@
+[
+  {
+    "id": "search-1",
+    "name": "Angular Paris",
+    "query": "Angular",
+    "location": "Paris",
+    "department": "Digital Factory",
+    "alertEnabled": true
+  },
+  {
+    "id": "search-2",
+    "name": "Design senior",
+    "query": "Designer",
+    "location": "Paris",
+    "department": "Experience",
+    "alertEnabled": false
+  }
+]

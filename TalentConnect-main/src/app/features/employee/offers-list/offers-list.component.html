@@ -1,0 +1,16 @@
+<div class="container">
+  <h1>Offres d'emploi</h1>
+
+  <p *ngIf="isLoading()">Chargement des offres...</p>
+  <div *ngIf="!isLoading()" class="offers-grid">
+    <div class="offer-card" *ngFor="let offer of offers()" (click)="viewOffer(offer.id)">
+      <h3>{{ offer.title }}</h3>
+      <p>{{ offer.description }}</p>
+      <div class="offer-meta">
+        <span>{{ offer.department }}</span>
+        <span>{{ offer.location }}</span>
+        <span>{{ offer.type }}</span>
+      </div>
+    </div>
+  </div>
+</div>

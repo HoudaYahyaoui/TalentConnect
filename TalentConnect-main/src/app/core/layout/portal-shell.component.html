@@ -1,0 +1,166 @@
+<mat-sidenav-container class="app-shell" appCommandPalette>
+  <!-- ── Drawer ── -->
+  <mat-sidenav
+    #drawer
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="!isMobile()"
+    [class.collapsed]="sidenavCollapsed() && !isMobile()"
+    class="app-drawer"
+    role="navigation"
+    aria-label="Navigation principale"
+  >
+    <!-- Brand -->
+    <div class="brand-block">
+      <div class="brand-mark" aria-hidden="true">TC</div>
+      <div class="brand-text" *ngIf="!sidenavCollapsed() || isMobile()">
+        <strong>TalentConnect</strong>
+        <small>Portail RH</small>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <mat-nav-list class="nav-list">
+      <a
+        mat-list-item
+        *ngFor="let item of navItems()"
+        [routerLink]="item.path"
+        routerLinkActive="active-link"
+        class="nav-item"
+        [matTooltip]="sidenavCollapsed() && !isMobile() ? item.label : ''"
+        matTooltipPosition="right"
+      >
+        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <span matListItemTitle class="nav-label" *ngIf="!sidenavCollapsed() || isMobile()">{{
+          item.label
+        }}</span>
+      </a>
+    </mat-nav-list>
+
+    <!-- Footer = collapse toggle only -->
+    <div class="drawer-footer">
+      <button
+        *ngIf="!isMobile()"
+        mat-icon-button
+        type="button"
+        class="collapse-toggle"
+        (click)="toggleCollapse()"
+        [matTooltip]="sidenavCollapsed() ? 'Développer le menu' : 'Réduire le menu'"
+        matTooltipPosition="right"
+        [attr.aria-label]="sidenavCollapsed() ? 'Développer' : 'Réduire'"
+      >
+        <mat-icon>{{ sidenavCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+    </div>
+  </mat-sidenav>
+
+  <!-- ── Content ── -->
+  <mat-sidenav-content class="main-content">
+    <!-- Toolbar -->
+    <mat-toolbar class="app-toolbar" role="banner">
+      <!-- Mobile hamburger -->
+      <button
+        *ngIf="isMobile()"
+        mat-icon-button
+        type="button"
+        aria-label="Ouvrir le menu"
+        (click)="drawer.toggle()"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <!-- Role badge -->
+      <div class="toolbar-context">
+        <span class="toolbar-role-badge">{{ roleLabel() }}</span>
+      </div>
+
+      <span class="toolbar-spacer"></span>
+
+      <!-- Ctrl+K search trigger -->
+      <button
+        mat-stroked-button
+        type="button"
+        class="palette-trigger"
+        (click)="openPalette()"
+        matTooltip="Recherche rapide (Ctrl+K)"
+        aria-label="Ouvrir la recherche rapide"
+      >
+        <mat-icon>search</mat-icon>
+        <span class="palette-label">Rechercher</span>
+        <kbd class="palette-hint">Ctrl K</kbd>
+      </button>
+
+      <!-- Notifications -->
+      <button
+        mat-icon-button
+        type="button"
+        class="toolbar-icon-btn"
+        [matTooltip]="'Notifications' + (unreadCount() > 0 ? ' (' + unreadCount() + ')' : '')"
+        aria-label="Voir les notifications"
+        (click)="notifCenter.toggle()"
+      >
+        <mat-icon aria-hidden="false" [matBadge]="unreadCount() || null" matBadgeColor="warn" matBadgeSize="small"
+          >notifications</mat-icon
+        >
+      </button>
+
+      <!-- Avatar + User menu -->
+      <button
+        mat-icon-button
+        type="button"
+        class="avatar-btn"
+        [matMenuTriggerFor]="userMenu"
+        aria-label="Menu utilisateur"
+        [matTooltip]="fullName()"
+      >
+        <div class="toolbar-avatar" aria-hidden="true">{{ initials() }}</div>
+      </button>
+
+      <mat-menu #userMenu="matMenu" xPosition="before" class="user-dropdown">
+        <!-- User info header -->
+        <div class="menu-user-header" (click)="$event.stopPropagation()">
+          <div class="menu-avatar">{{ initials() }}</div>
+          <div class="menu-user-info">
+            <strong>{{ fullName() }}</strong>
+            <span class="menu-user-email">{{ user()?.email }}</span>
+            <span class="menu-user-role">{{ roleLabel() }}</span>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+
+        <button mat-menu-item (click)="navigateTo(profilePath())">
+          <mat-icon>person</mat-icon>
+          <span>Mon profil</span>
+        </button>
+
+        <button mat-menu-item (click)="toggleTheme()">
+          <mat-icon>{{ theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+          <span>{{ theme() === 'light' ? 'Mode sombre' : 'Mode clair' }}</span>
+        </button>
+
+        <button mat-menu-item *ngIf="!isMobile()" (click)="toggleCollapse()">
+          <mat-icon>{{ sidenavCollapsed() ? 'menu_open' : 'menu' }}</mat-icon>
+          <span>{{ sidenavCollapsed() ? 'Développer le menu' : 'Réduire le menu' }}</span>
+        </button>
+
+        <mat-divider></mat-divider>
+
+        <button mat-menu-item class="menu-logout" (click)="logout()">
+          <mat-icon color="warn">logout</mat-icon>
+          <span>Se déconnecter</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <!-- Page content -->
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<app-notification-center #notifCenter></app-notification-center>
+<app-chatbot-widget></app-chatbot-widget>
+<p-toast
+  position="top-right"
+  [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"
+></p-toast>

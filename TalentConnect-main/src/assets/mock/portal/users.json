@@ -1,0 +1,50 @@
+[
+  {
+    "id": "u-employee-1",
+    "employeeId": "EMP-2048",
+    "firstName": "Lina",
+    "lastName": "Benali",
+    "email": "employee@talentconnect.local",
+    "role": "EMPLOYEE",
+    "department": "Digital Factory",
+    "location": "Paris",
+    "title": "Product Designer",
+    "skills": ["Figma", "UX Research", "Design Systems", "Angular Basics"],
+    "experienceYears": 5,
+    "avatarUrl": "https://ui-avatars.com/api/?name=Lina+Benali",
+    "languages": ["fr", "en"],
+    "password": "password123"
+  },
+  {
+    "id": "u-hr-1",
+    "employeeId": "HR-1024",
+    "firstName": "Sami",
+    "lastName": "Dupuis",
+    "email": "rh@talentconnect.local",
+    "role": "HR",
+    "department": "Talent Acquisition",
+    "location": "Lyon",
+    "title": "Recruitment Lead",
+    "skills": ["Hiring", "Interviewing", "Analytics"],
+    "experienceYears": 8,
+    "avatarUrl": "https://ui-avatars.com/api/?name=Sami+Dupuis",
+    "languages": ["fr", "en"],
+    "password": "password123"
+  },
+  {
+    "id": "u-admin-1",
+    "employeeId": "ADM-0001",
+    "firstName": "Nora",
+    "lastName": "Keller",
+    "email": "admin@talentconnect.local",
+    "role": "ADMIN",
+    "department": "Platform Ops",
+    "location": "Tunis",
+    "title": "Platform Administrator",
+    "skills": ["IAM", "Observability", "Security"],
+    "experienceYears": 10,
+    "avatarUrl": "https://ui-avatars.com/api/?name=Nora+Keller",
+    "languages": ["fr", "en"],
+    "password": "password123"
+  }
+]

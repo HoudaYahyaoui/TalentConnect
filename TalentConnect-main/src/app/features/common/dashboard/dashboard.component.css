@@ -1,0 +1,14 @@
+.dashboard {
+  padding: 2rem;
+  text-align: center;
+}
+
+.logout-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+}

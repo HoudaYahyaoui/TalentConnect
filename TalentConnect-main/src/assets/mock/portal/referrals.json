@@ -1,0 +1,15 @@
+[
+  {
+    "id": "ref-1",
+    "referrerEmail": "employee@talentconnect.tn",
+    "candidateFullName": "Yassine Trabelsi",
+    "candidateEmail": "yassine.trabelsi@example.com",
+    "candidatePhone": "+21655001122",
+    "linkedIn": "https://linkedin.com/in/ytrabelsi",
+    "targetJobId": "job-3",
+    "skills": ["SQL", "Tableau", "Power BI"],
+    "cvDocumentId": "doc-2",
+    "createdAt": "2026-05-02T09:30:00Z",
+    "status": "REVIEW"
+  }
+]

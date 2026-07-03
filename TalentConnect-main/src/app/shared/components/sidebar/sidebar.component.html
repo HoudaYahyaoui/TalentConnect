@@ -1,0 +1,21 @@
+<aside class="sidebar" aria-label="Navigation de l’application">
+  <div class="sidebar-brand" role="banner">
+    <span class="brand-mark">TC</span>
+    <div class="brand-text">
+      <strong>TalentConnect</strong>
+      <small>Dashboard interne</small>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a
+      *ngFor="let item of items"
+      [routerLink]="item.path"
+      routerLinkActive="active"
+      class="nav-link"
+    >
+      <span class="nav-icon">{{ item.icon }}</span>
+      <span>{{ item.label }}</span>
+    </a>
+  </nav>
+</aside>

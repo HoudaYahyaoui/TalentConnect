@@ -1,0 +1,24 @@
+<mat-card class="roles-card">
+  <h2>Rôles & permissions</h2>
+  <div class="role-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Rôle</mat-label>
+      <mat-select>
+        <mat-option value="ROLE_ADMIN">Administrateur</mat-option>
+        <mat-option value="ROLE_HR">RH</mat-option>
+        <mat-option value="ROLE_CANDIDATE">Collaborateur</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Permission</mat-label>
+      <mat-select multiple>
+        <mat-option value="manage_users">Gérer les utilisateurs</mat-option>
+        <mat-option value="edit_workflow">Modifier les workflows</mat-option>
+        <mat-option value="view_reports">Voir les rapports</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <button mat-flat-button color="primary">Enregistrer</button>
+</mat-card>

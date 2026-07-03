@@ -1,0 +1,11 @@
+<div class="dashboard">
+  <h1>Tableau de bord</h1>
+  <div *ngIf="user">
+    <p>
+      Bonjour {{ user.firstName }} {{ user.lastName }}, vous êtes connecté en tant que
+      {{ user.role === 'EMPLOYEE' ? 'Employé' : user.role === 'HR' ? 'RH' : 'Admin' }}.
+    </p>
+    <p>Redirection en cours...</p>
+  </div>
+  <button (click)="logout()" class="logout-btn">Se déconnecter</button>
+</div>

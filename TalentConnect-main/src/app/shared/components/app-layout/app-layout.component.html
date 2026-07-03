@@ -1,0 +1,24 @@
+<mat-sidenav-container class="layout-shell">
+  <mat-sidenav class="layout-sidebar" mode="side" opened>
+    <div class="sidebar-brand">
+      <span class="brand-icon">TC</span>
+      <div>
+        <h1>TalentConnect</h1>
+        <p>Plateforme RH interne</p>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <app-sidebar [items]="menuItems()"></app-sidebar>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="layout-main">
+    <app-navbar></app-navbar>
+
+    <section class="layout-content" aria-live="polite">
+      <router-outlet></router-outlet>
+    </section>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<app-chatbot></app-chatbot>
+<app-toast-notification></app-toast-notification>

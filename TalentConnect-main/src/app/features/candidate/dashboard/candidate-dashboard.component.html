@@ -1,0 +1,45 @@
+<div class="dashboard-grid">
+  <mat-card class="dashboard-card summary-card">
+    <div class="card-title">
+      <span class="icon">📊</span>
+      <h2>Mon profil de mobilité</h2>
+    </div>
+    <p>Suivez votre matching aux offres et analysez votre progression.</p>
+    <div class="summary-list">
+      <p>Offres recommandées : <strong>8</strong></p>
+      <p>Compétences clés : <strong>5</strong></p>
+      <p>Candidatures en cours : <strong>3</strong></p>
+    </div>
+  </mat-card>
+
+  <mat-card class="dashboard-card">
+    <div class="card-title">
+      <span class="icon">🚀</span>
+      <h3>Offres à fort potentiel</h3>
+    </div>
+    <mat-list>
+      <mat-list-item *ngFor="let offer of recentOffers(); trackBy: trackByOffer">
+        <div>
+          <strong>{{ offer.title }}</strong>
+          <p>{{ offer.department }} · {{ offer.location }}</p>
+        </div>
+        <span class="pill">{{ offer.status }}</span>
+      </mat-list-item>
+    </mat-list>
+  </mat-card>
+
+  <mat-card class="dashboard-card">
+    <div class="card-title">
+      <span class="icon">🗂️</span>
+      <h3>Mes candidatures récentes</h3>
+    </div>
+    <mat-list>
+      <mat-list-item *ngFor="let application of openApplications(); trackBy: trackByApplication">
+        <div>
+          <strong>{{ application.offerTitle }}</strong>
+          <p>{{ application.status }} · {{ application.appliedAt }}</p>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  </mat-card>
+</div>

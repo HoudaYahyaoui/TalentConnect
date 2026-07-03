@@ -1,0 +1,93 @@
+<div class="login-root">
+  <!-- Panneau gauche branding -->
+  <aside class="login-brand" aria-hidden="true">
+    <div class="brand-logo">TC</div>
+    <h1 class="brand-name">TalentConnect</h1>
+    <p class="brand-tag">Portail RH &mdash; Mobilité &amp; Recrutement</p>
+    <ul class="brand-features">
+      <li><span class="feat-dot"></span>Mobilité interne intelligente</li>
+      <li><span class="feat-dot"></span>Pipeline de recrutement unifié</li>
+      <li><span class="feat-dot"></span>Pilotage RH en temps réel</li>
+    </ul>
+    <div class="brand-decoration">
+      <div class="deco-ring r1"></div>
+      <div class="deco-ring r2"></div>
+      <div class="deco-ring r3"></div>
+    </div>
+  </aside>
+
+  <!-- Panneau droit formulaire -->
+  <main class="login-form-panel">
+    <div class="login-form-wrap">
+      <header class="login-header">
+        <div class="login-logo-sm" aria-hidden="true">TC</div>
+        <h2>Connexion</h2>
+        <p>Accédez à votre espace de travail</p>
+      </header>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="login-form" novalidate>
+        <div class="field-wrap">
+          <label for="login-email" class="field-label">Adresse e-mail</label>
+          <div class="field-inner" [class.has-error]="form.get('email')?.invalid && form.get('email')?.touched">
+            <mat-icon class="field-icon">alternate_email</mat-icon>
+            <input
+              id="login-email"
+              type="email"
+              formControlName="email"
+              autocomplete="username"
+              placeholder="prenom.nom@domaine.fr"
+              class="field-input"
+            />
+          </div>
+          @if (form.get('email')?.invalid && form.get('email')?.touched) {
+            <span class="field-error">Adresse e-mail invalide</span>
+          }
+        </div>
+
+        <div class="field-wrap">
+          <label for="login-password" class="field-label">Mot de passe</label>
+          <div class="field-inner" [class.has-error]="form.get('password')?.invalid && form.get('password')?.touched">
+            <mat-icon class="field-icon">lock_outline</mat-icon>
+            <input
+              id="login-password"
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              autocomplete="current-password"
+              placeholder="Votre mot de passe"
+              class="field-input"
+            />
+            <button type="button" class="toggle-pwd" (click)="showPassword.set(!showPassword())"
+              [attr.aria-label]="showPassword() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+              <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (form.get('password')?.invalid && form.get('password')?.touched) {
+            <span class="field-error">Mot de passe requis (8 caractères minimum)</span>
+          }
+        </div>
+
+        <!-- Erreur inline -->
+        @if (errorMsg()) {
+          <div class="error-alert" role="alert">
+            <mat-icon class="error-alert-icon">error_outline</mat-icon>
+            <span>{{ errorMsg() }}</span>
+          </div>
+        }
+
+        <div class="form-options">
+          <a routerLink="/auth/forgot-password" class="forgot-link">Mot de passe oublié&nbsp;?</a>
+        </div>
+
+        <button type="submit" class="btn-connect" [disabled]="loading()">
+          @if (!loading()) { <mat-icon>arrow_forward</mat-icon> }
+          @if (loading()) { <span class="btn-spinner"></span> }
+          {{ loading() ? 'Connexion en cours…' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <footer class="login-footer">
+        <p>TalentConnect &copy; {{ currentYear }} &mdash; Sopra Steria Group</p>
+      </footer>
+    </div>
+  </main>
+</div>

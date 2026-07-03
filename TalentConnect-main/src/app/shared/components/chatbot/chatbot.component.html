@@ -1,0 +1,69 @@
+﻿<div class="chatbot-widget" [class.open]="isOpen()">
+  <button
+    type="button"
+    class="chat-toggle"
+    mat-fab
+    color="primary"
+    [attr.aria-label]="isOpen() ? 'Fermer le chatbot' : 'Ouvrir le chatbot'"
+    (click)="toggleChat()"
+  >
+    <mat-icon>{{ isOpen() ? 'close' : 'chat' }}</mat-icon>
+  </button>
+
+  <aside class="chat-panel" *ngIf="isOpen()" role="dialog" aria-label="Chatbot Assistant RH">
+    <header class="chat-header">
+      <div>
+        <span class="chat-title">Assistant RH</span>
+        <p>Recherche guidée et réponse immédiate.</p>
+      </div>
+      <button mat-icon-button aria-label="Fermer" (click)="toggleChat()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <section class="chat-feed" aria-live="polite" aria-relevant="additions">
+      <div
+        class="chat-message"
+        *ngFor="let message of messages(); trackBy: trackByMessageId"
+        [class.user]="message.isUser"
+        [attr.aria-label]="message.isUser ? 'Votre message' : 'Réponse de l\'assistant'"
+      >
+        {{ message.text }}
+      </div>
+    </section>
+
+    <section class="chat-suggestions">
+      <span>Suggestions rapides</span>
+      <mat-chip-set aria-label="suggestions">
+        <button
+          mat-chip
+          [highlighted]="true"
+          *ngFor="let suggestion of suggestions"
+          (click)="useSuggestion(suggestion)"
+        >
+          {{ suggestion }}
+        </button>
+      </mat-chip-set>
+    </section>
+
+    <footer class="chat-input-row">
+      <mat-form-field appearance="outline" class="chat-input-field">
+        <input
+          matInput
+          placeholder="Posez votre question"
+          [(ngModel)]="userInput"
+          (keydown)="onKeydown($event)"
+          aria-label="Saisir votre message"
+        />
+      </mat-form-field>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="sendMessage()"
+        aria-label="Envoyer le message"
+      >
+        Envoyer
+      </button>
+    </footer>
+  </aside>
+</div>

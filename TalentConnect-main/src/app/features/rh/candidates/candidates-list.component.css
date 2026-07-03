@@ -1,0 +1,32 @@
+.candidates-card {
+  border-radius: 24px;
+  padding: 1.5rem;
+}
+
+.search-row {
+  margin-bottom: 1rem;
+}
+
+.search-field {
+  width: 100%;
+}
+
+mat-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 0;
+}
+
+mat-list-item:last-child {
+  border-bottom: none;
+}
+
+.score-pill {
+  background: #eef2ff;
+  color: #1e3a8a;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  font-weight: 700;
+}

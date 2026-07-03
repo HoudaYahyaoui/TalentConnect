@@ -1,0 +1,16 @@
+.offer-detail {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.offer-meta {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.offer-description {
+  margin: var(--spacing-xl) 0;
+}

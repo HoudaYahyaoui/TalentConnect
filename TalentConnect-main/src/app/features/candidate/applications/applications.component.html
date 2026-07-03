@@ -1,0 +1,11 @@
+<mat-card class="applications-card">
+  <h2>Mes candidatures</h2>
+  <mat-list>
+    <mat-list-item *ngFor="let application of applications()">
+      <div>
+        <strong>{{ application.offerTitle }}</strong>
+        <p>{{ application.status }} · {{ application.appliedAt }}</p>
+      </div>
+    </mat-list-item>
+  </mat-list>
+</mat-card>

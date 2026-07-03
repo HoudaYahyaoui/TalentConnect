@@ -1,0 +1,23 @@
+[
+  {
+    "intent": "JOB",
+    "triggers": ["offre", "poste", "mobilité", "angular"],
+    "answer": "Les offres sont filtrables par lieu, métier et niveau. Vous pouvez aussi activer une alerte de recherche depuis l'espace collaborateur.",
+    "suggestions": ["Montre-moi les postes Angular", "Comment activer une alerte ?"],
+    "sources": ["Catalogue des offres", "Recherche sauvegardée"]
+  },
+  {
+    "intent": "REFERRAL",
+    "triggers": ["recommandation", "cooptation", "cv", "pdf"],
+    "answer": "Pour recommander un profil, ouvrez le formulaire de recommandation, renseignez le poste cible et déposez un CV PDF de moins de 10 Mo.",
+    "suggestions": ["Ouvrir le formulaire de recommandation", "Quelles sont les règles PDF ?"],
+    "sources": ["Formulaire de recommandation", "Politique documentaire"]
+  },
+  {
+    "intent": "STATUS",
+    "triggers": ["statut", "candidature", "suivi", "timeline"],
+    "answer": "Le suivi affiche chaque étape de la candidature avec horodatage, auteur et documents associés.",
+    "suggestions": ["Voir mes candidatures", "Comprendre les statuts"],
+    "sources": ["Timeline candidature", "Centre de notifications"]
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "audit-1",
+    "actor": "Sami Dupuis",
+    "actorRole": "HR",
+    "action": "Statut mis à jour en INTERVIEW",
+    "entityType": "APPLICATION",
+    "entityId": "app-1",
+    "timestamp": "2026-05-06T15:00:00Z",
+    "details": "Lead Angular Engineer - entretien manager planifié"
+  },
+  {
+    "id": "audit-2",
+    "actor": "Lina Benali",
+    "actorRole": "EMPLOYEE",
+    "action": "Nouvelle recommandation créée",
+    "entityType": "REFERRAL",
+    "entityId": "ref-1",
+    "timestamp": "2026-05-02T09:30:00Z",
+    "details": "CV PDF chargé avec succès"
+  }
+]

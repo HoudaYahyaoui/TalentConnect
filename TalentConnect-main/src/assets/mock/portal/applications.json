@@ -1,0 +1,88 @@
+[
+  {
+    "id": "app-1",
+    "jobId": "job-1",
+    "employeeId": "u-employee-1",
+    "candidateName": "Lina Benali",
+    "source": "INTERNAL",
+    "status": "INTERVIEW",
+    "createdAt": "2026-04-22T10:00:00Z",
+    "updatedAt": "2026-05-06T15:00:00Z",
+    "score": 91,
+    "timeline": [
+      {
+        "id": "t-1",
+        "title": "Candidature envoyée",
+        "description": "Profil interne utilisé",
+        "timestamp": "2026-04-22T10:00:00Z",
+        "author": "Lina Benali"
+      },
+      {
+        "id": "t-2",
+        "title": "Préqualification RH",
+        "description": "Profil shortlisté",
+        "timestamp": "2026-04-24T08:00:00Z",
+        "author": "Sami Dupuis"
+      },
+      {
+        "id": "t-3",
+        "title": "Entretien planifié",
+        "description": "Entretien manager le 10 mai",
+        "timestamp": "2026-05-06T15:00:00Z",
+        "author": "Sami Dupuis"
+      }
+    ],
+    "documents": [
+      {
+        "id": "doc-1",
+        "fileName": "profil-interne.pdf",
+        "mimeType": "application/pdf",
+        "size": 182400,
+        "previewUrl": "https://example.com/profile.pdf",
+        "downloadUrl": "https://example.com/profile.pdf",
+        "scanStatus": "SAFE",
+        "uploadedAt": "2026-04-22T10:00:00Z"
+      }
+    ],
+    "notes": "Très bon fit sur architecture Angular et design system."
+  },
+  {
+    "id": "app-2",
+    "jobId": "job-3",
+    "candidateName": "Yassine Trabelsi",
+    "source": "REFERRAL",
+    "status": "REVIEW",
+    "createdAt": "2026-05-02T09:30:00Z",
+    "updatedAt": "2026-05-05T11:15:00Z",
+    "score": 74,
+    "timeline": [
+      {
+        "id": "t-4",
+        "title": "Recommandation créée",
+        "description": "CV déposé par cooptation",
+        "timestamp": "2026-05-02T09:30:00Z",
+        "author": "Lina Benali"
+      },
+      {
+        "id": "t-5",
+        "title": "Revue RH",
+        "description": "Analyse des compétences data en cours",
+        "timestamp": "2026-05-05T11:15:00Z",
+        "author": "Sami Dupuis"
+      }
+    ],
+    "documents": [
+      {
+        "id": "doc-2",
+        "fileName": "cv-yassine.pdf",
+        "mimeType": "application/pdf",
+        "size": 245000,
+        "previewUrl": "https://example.com/yassine.pdf",
+        "downloadUrl": "https://example.com/yassine.pdf",
+        "scanStatus": "SAFE",
+        "uploadedAt": "2026-05-02T09:32:00Z"
+      }
+    ],
+    "notes": "Bon potentiel sur analytics mais mobilité à confirmer."
+  }
+]

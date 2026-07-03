@@ -1,0 +1,86 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$cyan-palette,
+        tertiary: mat.$violet-palette,
+      ),
+      typography: Inter,
+      density: -1,
+    )
+  );
+}
+
+body {
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mat-mdc-card {
+  border-radius: 1rem !important;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-soft) !important;
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+/* Boutons taille réduite */
+.mat-mdc-raised-button,
+.mat-mdc-flat-button,
+.mat-mdc-stroked-button,
+.mat-mdc-outlined-button {
+  border-radius: 10px !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  min-height: 36px !important;
+}
+
+.mat-mdc-icon-button {
+  width: 34px !important;
+  height: 34px !important;
+  padding: 5px !important;
+}
+
+/* Snackbar */
+.mat-mdc-snack-bar-container {
+  border-radius: 10px !important;
+  font-size: 0.85rem !important;
+}
+
+/* Dialog */
+.tc-dialog .mat-mdc-dialog-container {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+/* Paginator compact */
+.mat-mdc-paginator {
+  font-size: 0.78rem !important;
+  background: transparent !important;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 0;
+}
+
+/* Select option */
+.mat-mdc-option {
+  font-size: 0.85rem !important;
+  min-height: 38px !important;
+}
+
+/* Slide toggle */
+.mdc-switch {
+  transform: scale(0.85);
+}

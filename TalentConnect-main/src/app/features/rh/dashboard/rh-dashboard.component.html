@@ -1,0 +1,58 @@
+<div class="rh-dashboard-grid">
+  <mat-card class="rh-card">
+    <div class="card-title">
+      <span class="icon">📈</span>
+      <div>
+        <h2>KPIs RH</h2>
+        <p>Vue globale du recrutement</p>
+      </div>
+    </div>
+    <div class="kpi-list">
+      <div>
+        <strong>24</strong>
+        <span>Candidatures actives</span>
+      </div>
+      <div>
+        <strong>6</strong>
+        <span>Entretiens prévus</span>
+      </div>
+      <div>
+        <strong>12</strong>
+        <span>Offres ouvertes</span>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card class="rh-card">
+    <div class="card-title">
+      <span class="icon">👥</span>
+      <div>
+        <h3>Candidats récents</h3>
+      </div>
+    </div>
+    <mat-list>
+      <mat-list-item *ngFor="let candidate of recentCandidates(); trackBy: trackByCandidate">
+        <div>
+          <strong>{{ candidate.displayName }}</strong>
+          <p>{{ candidate.title }} · {{ candidate.location }}</p>
+        </div>
+        <span class="badge">{{ candidate.score }}%</span>
+      </mat-list-item>
+    </mat-list>
+  </mat-card>
+
+  <mat-card class="rh-card full-width">
+    <div class="card-title">
+      <span class="icon">🧭</span>
+      <div>
+        <h3>Statut des pipelines</h3>
+      </div>
+    </div>
+    <div class="pipeline-list">
+      <div class="pipeline-item" *ngFor="let item of pipelineStatus(); trackBy: trackByStage">
+        <span>{{ item.stage }}</span>
+        <strong>{{ item.count }}</strong>
+      </div>
+    </div>
+  </mat-card>
+</div>

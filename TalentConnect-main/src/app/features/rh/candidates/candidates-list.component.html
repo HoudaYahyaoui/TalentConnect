@@ -1,0 +1,18 @@
+<mat-card class="candidates-card">
+  <div class="search-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Rechercher un candidat</mat-label>
+      <input matInput placeholder="Nom, compétence, poste" />
+    </mat-form-field>
+  </div>
+
+  <mat-list>
+    <mat-list-item *ngFor="let candidate of candidates()">
+      <div>
+        <strong>{{ candidate.displayName }}</strong>
+        <p>{{ candidate.title }} · {{ candidate.location }}</p>
+      </div>
+      <span class="score-pill">{{ candidate.score }}%</span>
+    </mat-list-item>
+  </mat-list>
+</mat-card>

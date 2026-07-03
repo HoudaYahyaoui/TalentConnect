@@ -1,0 +1,242 @@
+.apply-wrap {
+  display: grid;
+  gap: 16px;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.back-link {
+  align-self: flex-start;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+}
+
+/* Job banner */
+.job-banner {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.job-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.job-icon-wrap {
+  width: 44px;
+  height: 44px;
+  background: var(--brand-100);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.job-icon-wrap mat-icon {
+  color: var(--brand-600);
+}
+.job-banner h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+.job-banner p {
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  margin: 0;
+}
+.score-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.1);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+.score-badge.high {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+.score-badge mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* Stepper */
+.apply-stepper {
+  background: transparent;
+}
+::ng-deep .apply-stepper .mat-stepper-header-panel {
+  background: transparent;
+}
+::ng-deep .apply-stepper .mat-step-header .mat-step-icon-selected,
+::ng-deep .apply-stepper .mat-step-header .mat-step-icon-state-done {
+  background: var(--brand-600);
+}
+
+.step-form {
+  padding: 20px 0 8px;
+  display: grid;
+  gap: 16px;
+}
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+.full-width {
+  width: 100%;
+}
+
+/* Upload zone */
+.upload-zone {
+  border: 2px dashed var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 150ms,
+    background 150ms;
+  background: var(--surface-raised);
+}
+.upload-zone:hover {
+  border-color: var(--brand-400);
+  background: var(--brand-50);
+}
+.upload-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--brand-400);
+}
+.upload-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 8px 0 4px;
+}
+.upload-hint {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+/* Step actions */
+.step-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+/* Recap */
+.recap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+}
+.recap-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.recap-label {
+  font-size: 0.75rem;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.recap-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.recap-motivation {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.recap-motivation p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+.consent-wrap {
+  padding: 8px 0;
+}
+
+.btn-primary {
+  background: var(--brand-600) !important;
+  color: #fff !important;
+}
+.btn-submit {
+  background: var(--success-500, #22c55e) !important;
+  color: #fff !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-submit mat-spinner {
+  display: inline-flex;
+}
+
+/* Success card */
+.success-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 48px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.success-icon-wrap {
+  width: 72px;
+  height: 72px;
+  background: rgba(34, 197, 94, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.success-icon {
+  font-size: 42px;
+  width: 42px;
+  height: 42px;
+  color: #22c55e;
+}
+.success-card h2 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+.success-card p {
+  color: var(--text-soft);
+  max-width: 440px;
+  margin: 0;
+}
+.success-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}

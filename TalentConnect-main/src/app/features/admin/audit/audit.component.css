@@ -1,0 +1,21 @@
+.audit-card {
+  border-radius: 24px;
+  padding: 1.5rem;
+}
+
+mat-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 0;
+}
+
+mat-list-item:last-child {
+  border-bottom: none;
+}
+
+mat-list-item p {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+}

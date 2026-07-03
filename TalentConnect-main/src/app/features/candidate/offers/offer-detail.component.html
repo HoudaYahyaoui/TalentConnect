@@ -1,0 +1,27 @@
+<div class="offer-detail-page">
+  <mat-card class="offer-detail-card">
+    <div class="offer-detail-header">
+      <div>
+        <h2>{{ offer()?.title }}</h2>
+        <p>{{ offer()?.department }} · {{ offer()?.location }}</p>
+      </div>
+      <button mat-flat-button color="primary" (click)="apply()">Postuler</button>
+    </div>
+
+    <div class="offer-detail-section">
+      <h3>Description</h3>
+      <p>{{ offer()?.description }}</p>
+    </div>
+
+    <div class="offer-detail-section two-column">
+      <div>
+        <strong>Match estimé</strong>
+        <p>{{ offer()?.matchScore }}%</p>
+      </div>
+      <div>
+        <strong>Statut</strong>
+        <p>{{ offer()?.status }}</p>
+      </div>
+    </div>
+  </mat-card>
+</div>

@@ -1,0 +1,70 @@
+.rh-dashboard-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rh-card {
+  padding: 1.5rem;
+  border-radius: 24px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.card-title .icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #e0f2fe;
+}
+
+.kpi-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.kpi-list div {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.pipeline-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pipeline-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+  background: #f8fafc;
+  border-radius: 16px;
+}
+
+.badge {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+@media (max-width: 900px) {
+  .rh-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .full-width {
+    grid-column: auto;
+  }
+}

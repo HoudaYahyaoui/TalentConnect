@@ -1,0 +1,12 @@
+<mat-card class="audit-card">
+  <h2>Journal d’audit</h2>
+  <mat-list>
+    <mat-list-item *ngFor="let entry of logs()">
+      <div>
+        <strong>{{ entry.action }}</strong>
+        <p>{{ entry.user }} • {{ entry.timestamp }}</p>
+      </div>
+      <span>{{ entry.target }}</span>
+    </mat-list-item>
+  </mat-list>
+</mat-card>

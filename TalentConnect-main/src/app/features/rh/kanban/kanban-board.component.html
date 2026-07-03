@@ -1,0 +1,29 @@
+<div class="kanban-container">
+  <section class="kanban-column" *ngFor="let stage of stages">
+    <div class="column-header">
+      <h3>
+        {{
+          stage === 'received'
+            ? 'Reçu'
+            : stage === 'interview'
+              ? 'Entretien'
+              : stage === 'offer'
+                ? 'Offre'
+                : 'Embauché'
+        }}
+      </h3>
+      <span>{{ columns[stage].length }}</span>
+    </div>
+    <div
+      cdkDropList
+      [cdkDropListData]="columns[stage]"
+      class="column-list"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <article cdkDrag class="kanban-card" *ngFor="let candidate of columns[stage]">
+        <h4>{{ candidate.title }}</h4>
+        <p>{{ candidate.subtitle }}</p>
+      </article>
+    </div>
+  </section>
+</div>

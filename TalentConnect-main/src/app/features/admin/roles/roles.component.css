@@ -1,0 +1,21 @@
+.roles-card {
+  border-radius: 24px;
+  padding: 1.5rem;
+}
+
+.role-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1.5rem;
+}
+
+button {
+  min-width: 180px;
+}
+
+@media (max-width: 720px) {
+  .role-grid {
+    grid-template-columns: 1fr;
+  }
+}

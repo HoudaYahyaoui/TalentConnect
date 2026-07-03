@@ -1,0 +1,21 @@
+<div class="container">
+  <p *ngIf="isLoading()">Chargement de l'offre...</p>
+  <ng-container *ngIf="!isLoading()">
+    <div *ngIf="offer(); else offerNotFound" class="offer-detail">
+      <h1>{{ offer()!.title }}</h1>
+      <div class="offer-meta">
+        <span>Département: {{ offer()!.department }}</span>
+        <span>Lieu: {{ offer()!.location }}</span>
+        <span>Type: {{ offer()!.type }}</span>
+      </div>
+      <div class="offer-description">
+        <h2>Description</h2>
+        <p>{{ offer()!.description }}</p>
+      </div>
+      <button class="btn btn-primary" (click)="apply()">Postuler</button>
+    </div>
+    <ng-template #offerNotFound>
+      <p>Offre non trouvée</p>
+    </ng-template>
+  </ng-container>
+</div>

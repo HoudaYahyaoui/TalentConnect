@@ -1,0 +1,16 @@
+.rh-shell {
+  min-height: 100vh;
+  padding: 1rem 0;
+}
+
+.rh-header {
+  margin-bottom: 1rem;
+}
+
+.rh-header h1 {
+  margin: 0;
+}
+
+.rh-header p {
+  color: #475569;
+}

@@ -1,0 +1,56 @@
+<div class="search-filter-bar">
+  <div class="search-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [placeholder]="placeholder"
+        [(ngModel)]="query"
+        (keyup.enter)="onSearch()"
+        aria-label="Champ de recherche"
+      />
+      <button
+        *ngIf="query"
+        mat-icon-button
+        matSuffix
+        aria-label="Effacer la recherche"
+        (click)="query = ''; onSearch()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div class="filter-selects" *ngIf="filterOptions.length > 0">
+      <mat-form-field
+        appearance="outline"
+        *ngFor="let filter of filterOptions; trackBy: trackByKey"
+        class="filter-field"
+      >
+        <mat-label>{{ filter.label }}</mat-label>
+        <mat-select
+          [value]="filters[filter.key] || ''"
+          (selectionChange)="onFilterChange(filter.key, $event.value, filter.label)"
+        >
+          <mat-option value="">Tous</mat-option>
+          <mat-option *ngFor="let opt of filter.options" [value]="opt.value">
+            {{ opt.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="active-filters" *ngIf="activeFilters().length > 0">
+    <mat-chip-set aria-label="Filtres actifs">
+      <mat-chip
+        *ngFor="let filter of activeFilters(); trackBy: trackByKey"
+        [removable]="true"
+        (removed)="removeFilter(filter.key)"
+      >
+        {{ filter.label }}: {{ filter.value }}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-set>
+    <button mat-button color="warn" (click)="clearAll()" class="clear-btn">Effacer tout</button>
+  </div>
+</div>

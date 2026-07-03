@@ -1,0 +1,21 @@
+<div class="offers-grid">
+  <mat-card class="offer-card" *ngFor="let offer of offers()">
+    <div class="offer-head">
+      <div>
+        <h3>{{ offer.title }}</h3>
+        <p>{{ offer.department }} · {{ offer.location }}</p>
+      </div>
+      <span class="status-pill">{{ offer.status }}</span>
+    </div>
+
+    <p class="offer-description">{{ offer.description }}</p>
+
+    <div class="offer-footer">
+      <div class="offer-meta">
+        <span>Publié le {{ offer.postedAt }}</span>
+        <span>Match estimé : {{ offer.matchScore }}%</span>
+      </div>
+      <button mat-stroked-button color="primary" (click)="openOffer(offer.id)">Voir l’offre</button>
+    </div>
+  </mat-card>
+</div>

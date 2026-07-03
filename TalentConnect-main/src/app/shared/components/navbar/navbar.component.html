@@ -1,0 +1,23 @@
+<header class="navbar">
+  <div class="container flex items-center justify-between">
+    <div class="navbar-left">
+      <a routerLink="/app" class="navbar-logo">
+        <span class="logo-mark">TC</span>
+        <span class="logo-text">TalentConnect</span>
+      </a>
+      <span class="navbar-label">Plateforme RH & recrutement</span>
+    </div>
+
+    <div class="navbar-user">
+      <div class="user-chip">
+        <span class="user-avatar" [attr.aria-label]="'Avatar de ' + userDisplayName()">{{
+          userInitial()
+        }}</span>
+        <span class="user-name">{{ userDisplayName() }}</span>
+      </div>
+      <button (click)="logout()" class="btn btn-secondary" aria-label="Se déconnecter">
+        Déconnexion
+      </button>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,15 @@
+.workflow-card {
+  border-radius: 24px;
+  padding: 1.5rem;
+}
+
+.workflow-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  margin-bottom: 1.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
