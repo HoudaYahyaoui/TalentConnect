@@ -199,16 +199,18 @@ export const appRoutes: Routes = [
                 (m) => m.AdminSettingsPageComponent,
               ),
           },
-          {
-            path: 'grafana',
-            loadComponent: () =>
-              import('./features/admin/grafana-dashboard/grafana-dashboard.component').then(
-                (m) => m.GrafanaDashboardComponent,
-              ),
-            data: {
-              grafanaEmbedUrl: 'YOUR_GRAFANA_EMBED_URL_HERE' // REMPLACEZ CECI PAR VOTRE VRAIE URL D'EMBED GRAFANA
-            }
-          },
+           {
+             path: 'grafana',
+             loadComponent: () =>
+               import('./features/admin/grafana-dashboard/grafana-dashboard.component').then(
+                 (m) => m.GrafanaDashboardComponent,
+               ),
+             data: {
+               // URL Grafana (externe). Utilisez l'URL publique fournie. Pour Grafana Cloud la meilleure option
+               // reste d'ouvrir le tableau de bord dans un nouvel onglet (CSP peut bloquer l'iframe).
+               grafanaEmbedUrl: 'https://greenmockingbird2932.grafana.net/public-dashboards/18683b2494c941cc8d766b2a82b8e12a'
+             }
+           },
         ],
       },
       {

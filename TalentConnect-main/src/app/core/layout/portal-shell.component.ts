@@ -24,7 +24,6 @@ import { map, filter, shareReplay } from 'rxjs/operators';
 import { SessionStore } from '../state/session.store';
 import { AuthFacade } from '../services/auth.facade';
 import { AlertsService } from '../services/alerts.service';
-import { ChatbotWidgetComponent } from '../../features/chatbot/widget';
 import { NotificationCenterComponent } from '../../shared/components/notification-center/notification-center.component';
 import { CommandPaletteDirective } from '../../shared/components/command-palette/command-palette.directive';
 import { CommandPaletteDialogComponent } from '../../shared/components/command-palette/command-palette-dialog.component';
@@ -53,7 +52,6 @@ interface NavItem {
     MatTooltipModule,
     MatMenuModule,
     MatDividerModule,
-    ChatbotWidgetComponent,
     NotificationCenterComponent,
     CommandPaletteDirective,
     MatDialogModule,

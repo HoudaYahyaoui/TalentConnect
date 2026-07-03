@@ -1,10 +1,27 @@
 <div class="grafana-dashboard-container">
-  @if (safeGrafanaUrl) {
+  <!-- Iframe pour instances locales -->
+  @if (safeGrafanaUrl && isLocalEnvironment) {
     <iframe [src]="safeGrafanaUrl" frameborder="0" class="grafana-iframe"></iframe>
-  } @else {
+  }
+
+  <!-- Bouton pour accès direct (pour Grafana Cloud) -->
+  @if (grafanaEmbedUrl && !isLocalEnvironment) {
+    <div class="button-wrapper">
+      <button mat-raised-button color="primary" (click)="openGrafanaInNewTab()">
+        <mat-icon>open_in_new</mat-icon>
+        Ouvrir Grafana
+      </button>
+    </div>
+  }
+
+  <!-- Placeholder - Pas d'URL -->
+  @if (!grafanaEmbedUrl) {
     <div class="placeholder-message">
       <p>Veuillez configurer l'URL d'intégration Grafana.</p>
-      <p>Dans Grafana, allez sur votre tableau de bord, cliquez sur "Share" (Partager), puis "Embed" (Intégrer) et copiez l'URL de l'iframe.</p>
+      <p>
+        Dans Grafana, allez sur votre tableau de bord, cliquez sur "Share" (Partager), puis "Embed" (Intégrer) et
+        copiez l'URL de l'iframe.
+      </p>
     </div>
   }
 </div>

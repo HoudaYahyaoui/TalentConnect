@@ -15,8 +15,15 @@
   border: none;
 }
 
+.button-wrapper {
+  padding: 20px;
+  text-align: center;
+}
+
 .placeholder-message {
   text-align: center;
   color: var(--text-secondary);
   padding: 20px;
 }
+
+

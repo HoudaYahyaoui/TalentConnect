@@ -241,9 +241,19 @@ export class HrJobDialogComponent {
     // If already in yyyy-MM-dd format, return as-is
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
     // Convert ISO to yyyy-MM-dd
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return '';
-    return d.toISOString().substring(0, 10);
+    // Use string manipulation to avoid timezone issues
+    try {
+      const isoString = dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00Z`;
+      const date = new Date(isoString);
+      if (isNaN(date.getTime())) return '';
+      // Extract local date without UTC conversion
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(date.getUTCDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch {
+      return '';
+    }
   }
 
   readonly form = this.fb.group({
@@ -264,41 +274,45 @@ export class HrJobDialogComponent {
     hiringManager: [this.data.job?.hiringManager ?? ''],
   });
 
-  protected save(): void {
-    if (this.form.invalid) return;
-    const val = this.form.getRawValue();
-    // Convert date strings to ISO format for backend compatibility
-    // Returns undefined if empty, ISO string if valid
-    const toISODate = (dateStr: string | null | undefined): string | undefined => {
-      if (!dateStr) return undefined;
-      // If already in ISO format, return as-is
-      if (dateStr.includes('T')) return dateStr;
-      // Convert yyyy-MM-dd to ISO format
-      return new Date(dateStr).toISOString();
-    };
-    const job: Partial<JobOffer> = {
-      ...this.data.job,
-      title: val.title!,
-      department: val.department!,
-      location: val.location!,
-      employmentType: val.employmentType as JobOffer['employmentType'],
-      seniority: val.seniority as JobOffer['seniority'],
-      status: val.status as JobOffer['status'],
-      description: val.description!,
-      requirements:
-        val.requirementsText
-          ?.split('\n')
-          .map((s) => s.trim())
-          .filter(Boolean) ?? [],
-      tags:
-        val.tagsText
-          ?.split(',')
-          .map((s) => s.trim())
-          .filter(Boolean) ?? [],
-      publishedAt: toISODate(val.publishedAt),
-      closingAt: toISODate(val.closingAt),
-      hiringManager: val.hiringManager ?? '',
-    };
-    this.dialogRef.close(job);
-  }
+   protected save(): void {
+     if (this.form.invalid) return;
+     const val = this.form.getRawValue();
+     // Convert date strings to ISO format for backend compatibility
+     // Returns undefined if empty, ISO string if valid
+     const toISODate = (dateStr: string | null | undefined): string | undefined => {
+       if (!dateStr) return undefined;
+       // If already in ISO format, return as-is
+       if (dateStr.includes('T')) return dateStr;
+       // Convert yyyy-MM-dd to ISO format (UTC)
+       // Parse the date string as UTC to avoid timezone issues
+       const [year, month, day] = dateStr.split('-').map(Number);
+       if (isNaN(year) || isNaN(month) || isNaN(day)) return undefined;
+       const date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+       return date.toISOString();
+     };
+     const job: Partial<JobOffer> = {
+       ...this.data.job,
+       title: val.title!,
+       department: val.department!,
+       location: val.location!,
+       employmentType: val.employmentType as JobOffer['employmentType'],
+       seniority: val.seniority as JobOffer['seniority'],
+       status: val.status as JobOffer['status'],
+       description: val.description!,
+       requirements:
+         val.requirementsText
+           ?.split('\n')
+           .map((s) => s.trim())
+           .filter(Boolean) ?? [],
+       tags:
+         val.tagsText
+           ?.split(',')
+           .map((s) => s.trim())
+           .filter(Boolean) ?? [],
+       publishedAt: toISODate(val.publishedAt),
+       closingAt: toISODate(val.closingAt),
+       hiringManager: val.hiringManager ?? '',
+     };
+     this.dialogRef.close(job);
+   }
 }

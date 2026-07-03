@@ -24,11 +24,14 @@ interface BackendJobOffer {
 
 /* ================= STATUS ================= */
 function deriveStatus(job: BackendJobOffer): JobOffer['status'] {
-  const now = Date.now();
-  const closing = job.closingAt ? Date.parse(job.closingAt) : null;
-
   if (!job.published) return 'DRAFT';
-  if (closing !== null && closing < now) return 'CLOSED';
+
+  if (job.closingAt) {
+    const closing = new Date(job.closingAt).getTime();
+    const now = Date.now();
+    if (!isNaN(closing) && closing < now) return 'CLOSED';
+  }
+
   return 'OPEN';
 }
 
@@ -70,9 +73,8 @@ function toBackend(job: Partial<JobOffer>) {
     remote: false,
     description: job.description ?? '',
     published: status === 'OPEN',
-    publishedAt: job.publishedAt ?? null,
-    closingAt:
-      status === 'CLOSED' ? new Date(Date.now() - 60000).toISOString() : (job.closingAt ?? null),
+    publishedAt: job.publishedAt ? new Date(job.publishedAt).toISOString() : null,
+    closingAt: job.closingAt ? new Date(job.closingAt).toISOString() : null,
   };
 }
 
