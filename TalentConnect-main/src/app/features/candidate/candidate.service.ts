@@ -12,7 +12,7 @@ import { Application, Candidate, JobOffer, User } from '../../api/models/api-mod
 @Injectable({
   providedIn: 'root',
 })
-export class CandidateService {
+class CandidateService {
   private readonly jobsAdapter = inject(JobsAdapter);
   private readonly applicationsAdapter = inject(ApplicationsAdapter);
   private readonly authService = inject(AuthService);
@@ -61,17 +61,21 @@ export class CandidateService {
     );
   }
 
-  private toLegacyOffer(job: BackendJobOffer): JobOffer {
+  private toLegacyOffer(job: any): JobOffer {
     return {
       id: job.id,
       title: job.title,
-      department: job.department,
-      location: job.location,
-      postedAt: job.publishedAt,
+      department: job.department ?? '',
+      location: job.location ?? '',
+
+      // 🔥 FIX IMPORTANT NULL SAFETY
+      postedAt: job.publishedAt ?? job.createdAt ?? '',
+
       status: job.status === 'OPEN' ? 'Ouverte' : job.status === 'CLOSED' ? 'Fermée' : 'En cours',
+
       tags: job.tags ?? [],
       matchScore: job.recommendedScore ?? 0,
-      description: job.description,
+      description: job.description ?? '',
     };
   }
 
@@ -98,3 +102,5 @@ export class CandidateService {
     return map[status] ?? 'En attente';
   }
 }
+
+export default CandidateService

@@ -494,8 +494,7 @@ export class EmployeeJobsPageComponent {
     if (sort === 'score')
       jobs = [...jobs].sort((a, b) => (b.recommendedScore ?? 0) - (a.recommendedScore ?? 0));
     if (sort === 'publishedAt')
-      jobs = [...jobs].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
-    if (sort === 'title') jobs = [...jobs].sort((a, b) => a.title.localeCompare(b.title));
+      jobs = [...jobs].sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));    if (sort === 'title') jobs = [...jobs].sort((a, b) => a.title.localeCompare(b.title));
     return jobs;
   });
 

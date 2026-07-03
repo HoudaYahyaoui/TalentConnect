@@ -143,6 +143,7 @@ export class PortalShellComponent {
           { label: 'Rôles & Accès', path: '/app/admin/roles', icon: 'shield' },
           { label: 'Workflows', path: '/app/admin/workflow', icon: 'account_tree' },
           { label: 'Paramètres', path: '/app/admin/settings', icon: 'settings' },
+          { label: 'Grafana', path: '/app/admin/grafana', icon: 'insights' }, // NOUVEL ÉLÉMENT
         ];
       default:
         return [

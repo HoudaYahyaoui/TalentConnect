@@ -37,8 +37,8 @@ export interface JobOffer {
   description: string;
   requirements: string[];
   tags: string[];
-  publishedAt: string;
-  closingAt: string;
+  publishedAt: string | null; // Changé de 'string' à 'string | null'
+  closingAt: string | null;   // Changé de 'string' à 'string | null'
   hiringManager: string;
   recommendedScore?: number;
 }

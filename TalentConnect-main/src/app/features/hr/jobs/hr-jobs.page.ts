@@ -51,7 +51,6 @@ import { HrJobDialogComponent } from './hr-job-dialog.component';
     MatTooltipModule,
     MatDialogModule,
     MatMenuModule,
-    StatusChipComponent,
     SkeletonListComponent,
     EmptyStateComponent,
     ErrorStateComponent,

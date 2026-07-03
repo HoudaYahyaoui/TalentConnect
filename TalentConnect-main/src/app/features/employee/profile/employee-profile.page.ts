@@ -160,7 +160,13 @@ import { SkillsCatalogService, SKILL_CATALOG } from '../../../core/services/skil
               <div class="field-wrap">
                 <label class="field-lbl">Années d'expérience</label>
                 <!-- show current value as placeholder while control stays null to indicate non-modified -->
-                <input class="app-input" type="number" min="0" formControlName="experienceYears" placeholder="{{ user()?.experienceYears ?? '' }}" />
+                <input
+                  class="app-input"
+                  type="number"
+                  min="0"
+                  formControlName="experienceYears"
+                  placeholder="{{ user()?.experienceYears ?? '' }}"
+                />
               </div>
               <div class="field-wrap"></div>
             </div>
@@ -642,7 +648,7 @@ export class EmployeeProfilePageComponent implements OnInit {
   protected readonly session = inject(SessionStore);
   protected readonly catalog = inject(SkillsCatalogService);
 
-  private readonly jobs = toSignal(inject(JobsAdapter).getJobs({ sortBy: 'score' }), {
+  jobs = toSignal(inject(JobsAdapter).getJobs(), {
     initialValue: [],
   });
 
@@ -775,7 +781,7 @@ export class EmployeeProfilePageComponent implements OnInit {
           payload.experienceYears = n;
         } else if (valIsNumber) {
           // invalid number entered — show validation error and abort
-          this.toast.open('Années d\'expérience invalide', 'OK', { duration: 3000 });
+          this.toast.open("Années d'expérience invalide", 'OK', { duration: 3000 });
           return;
         }
       }
@@ -787,22 +793,20 @@ export class EmployeeProfilePageComponent implements OnInit {
       return;
     }
 
-    this.profileSvc
-      .save(payload)
-      .subscribe({
-        next: (profile) => {
-          this.extProfile.set(profile);
-          // update originalExperience from server and reset form dirty state
-          this.originalExperience = profile.experienceYears ?? null;
-          this.editForm.markAsPristine();
-          // keep control empty to represent 'not modified'
-          this.editForm.patchValue({ experienceYears: null });
-          this.editing.set(false);
-          this.toast.open('Profil mis a jour avec succes.', 'OK', { duration: 3000 });
-        },
-        error: () => {
-          this.toast.open('Impossible de mettre a jour le profil.', 'OK', { duration: 3000 });
-        },
-      });
+    this.profileSvc.save(payload).subscribe({
+      next: (profile) => {
+        this.extProfile.set(profile);
+        // update originalExperience from server and reset form dirty state
+        this.originalExperience = profile.experienceYears ?? null;
+        this.editForm.markAsPristine();
+        // keep control empty to represent 'not modified'
+        this.editForm.patchValue({ experienceYears: null });
+        this.editing.set(false);
+        this.toast.open('Profil mis a jour avec succes.', 'OK', { duration: 3000 });
+      },
+      error: () => {
+        this.toast.open('Impossible de mettre a jour le profil.', 'OK', { duration: 3000 });
+      },
+    });
   }
 }

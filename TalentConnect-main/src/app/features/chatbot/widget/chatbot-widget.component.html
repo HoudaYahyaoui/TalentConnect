@@ -27,9 +27,9 @@
   </div>
 
   <div class="chatbot-input-area">
-    <form [formGroup]="messageControl" (ngSubmit)="sendMessage()">
+    <form (ngSubmit)="sendMessage()"> <!-- CHANGEMENT ICI: [formGroup] supprimé -->
       <mat-form-field appearance="outline" class="message-input">
-        <input matInput placeholder="Posez votre question..." formControlName="message" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5" />
+        <input matInput placeholder="Posez votre question..." [formControl]="messageControl" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5" /> <!-- CHANGEMENT ICI: [formControl] au lieu de formControlName -->
         <button mat-icon-button matSuffix type="submit" [disabled]="messageControl.invalid || isLoading()" matTooltip="Envoyer">
           <mat-icon>send</mat-icon>
         </button>

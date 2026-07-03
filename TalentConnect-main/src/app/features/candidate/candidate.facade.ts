@@ -1,6 +1,6 @@
 import { DestroyRef, inject, Injectable, signal, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CandidateService } from './candidate.service';
+import CandidateService from './candidate.service';
 import { Application, Candidate, JobOffer } from '../../api/models/api-models';
 
 @Injectable({

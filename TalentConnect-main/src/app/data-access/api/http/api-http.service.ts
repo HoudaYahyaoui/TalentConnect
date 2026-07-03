@@ -38,6 +38,8 @@ const AUTH_BASE = environment.services.auth;
 const JOBS_BASE = environment.services.jobs;
 const CAND_BASE = environment.services.candidatures;
 const FILES_BASE = environment.services.files;
+const CHATBOT_BASE = environment.services.chatbot; // Ajouté pour le chatbot
+const BASE_API_URL = environment.apiGateway.baseUrl; // Ajouté pour l'API Gateway générale
 
 // Mapping rôle frontend → header X-Role pour candidatures-service (avec préfixe ROLE_)
 const ROLE_HEADER_MAP: Record<string, string> = {
@@ -58,6 +60,8 @@ export class ApiHttpService {
   readonly jobsBase = JOBS_BASE;
   readonly candBase = CAND_BASE;
   readonly filesBase = FILES_BASE;
+  readonly chatbotBase = CHATBOT_BASE; // Exposer la base du chatbot
+  readonly baseApiUrl = BASE_API_URL; // Exposer l'URL de l'API Gateway générale
 
   get isMock(): boolean {
     return environment.useMocks;
