@@ -135,18 +135,6 @@ interface AdminStats {
         </div>
       </section>
 
-      <!-- Nouvelle section pour les graphiques Grafana -->
-      <section class="panel">
-        <h3 class="panel-title"><mat-icon>insights</mat-icon> Surveillance du Backend</h3>
-        <p class="panel-sub">Statistiques clés de performance et d'utilisation des services.</p>
-        <div class="grafana-dashboard-container">
-          <!-- Remplacez 'YOUR_GRAFANA_EMBED_URL_HERE' par l'URL d'intégration de votre panneau Grafana -->
-          <app-grafana-panel-embed
-            [grafanaUrl]="'YOUR_GRAFANA_EMBED_URL_HERE'"
-            height="500px"
-          ></app-grafana-panel-embed>
-        </div>
-      </section>
 
       <!-- Quick actions -->
       <div class="quick-grid">
