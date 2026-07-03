@@ -28,6 +28,7 @@ import { NotificationCenterComponent } from '../../shared/components/notificatio
 import { CommandPaletteDirective } from '../../shared/components/command-palette/command-palette.directive';
 import { CommandPaletteDialogComponent } from '../../shared/components/command-palette/command-palette-dialog.component';
 import { ToastModule } from 'primeng/toast';
+import { ChatbotWidgetComponent } from '../../features/chatbot/widget';
 
 interface NavItem {
   label: string;
@@ -56,6 +57,7 @@ interface NavItem {
     CommandPaletteDirective,
     MatDialogModule,
     ToastModule,
+    ChatbotWidgetComponent,
   ],
   templateUrl: './portal-shell.component.html',
   styleUrls: ['./portal-shell.component.css'],
