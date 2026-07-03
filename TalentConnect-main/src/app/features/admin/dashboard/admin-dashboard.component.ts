@@ -8,7 +8,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { ApiHttpService } from '../../../data-access/api/http/api-http.service';
-import { GrafanaPanelEmbedComponent } from '../../../shared/components/grafana-panel-embed/grafana-panel-embed.component'; // <-- NOUVEL IMPORT
+// import { GrafanaPanelEmbedComponent } from '../../../shared/components/grafana-panel-embed/grafana-panel-embed.component'; // <-- Supprimé
+// import { FrontendMetricsService } from '../../../data-access/api/services/frontend-metrics.service'; // <-- Supprimé
 
 interface BackendAdminUser {
   id: number;
@@ -37,7 +38,7 @@ interface AdminStats {
     MatIconModule,
     MatButtonModule,
     MatProgressBarModule,
-    GrafanaPanelEmbedComponent, // <-- AJOUTER ICI
+    // GrafanaPanelEmbedComponent, // <-- Supprimé
   ],
   template: `
     <div class="admin-dash">
@@ -432,8 +433,9 @@ interface AdminStats {
     `,
   ],
 })
-export class AdminDashboardComponent {
+export class AdminDashboardComponent { // Removed OnInit
   private readonly api = inject(ApiHttpService);
+  // private readonly metricsService = inject(FrontendMetricsService); // <-- Supprimé
 
   protected readonly usersData = toSignal(
     this.api
@@ -454,6 +456,17 @@ export class AdminDashboardComponent {
       auditEventsToday: 0,
     };
   });
+
+  // Removed ngOnInit()
+  // ngOnInit(): void {
+  //   this.metricsService.recordMetric({
+  //     eventName: 'page_view',
+  //     path: '/app/admin/dashboard',
+  //     component: 'AdminDashboardComponent',
+  //   }).subscribe({
+  //     error: (err) => console.error('Failed to record page_view metric', err)
+  //   });
+  // }
 
   protected pct(count: number): number {
     const total = this.stats().totalUsers;
