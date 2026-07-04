@@ -1,31 +1,62 @@
 ﻿import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiHttpService } from '../http/api-http.service';
-import { ChatResponse, ChatHistoryPage, ChatMessage } from '../../models/chatbot.models';
+import {
+  ChatResponse,
+  ChatHistoryPage,
+  ChatMessage,
+  ConversationResponse,
+} from '../../models/chatbot.models';
+
+// Mapping entre les intents backend (ChatbotEngine / ChatbotService) et l'union frontend
+function toFrontendIntent(backendIntent: string): ChatResponse['intent'] {
+  switch (backendIntent) {
+    case 'job_search':
+    case 'job_search_live':
+      return 'JOB';
+    case 'application':
+      return 'STATUS';
+    case 'support':
+      return 'HELP';
+    case 'user_context':
+      return 'STATUS'; // ou 'HELP' selon ce que tu préfères pour candidatures/profil
+    // 'greeting', 'career', 'benefits', 'company', 'goodbye', 'fallback' n'ont pas d'équivalent -> UNKNOWN
+    default:
+      return 'UNKNOWN';
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 export class ChatbotAdapter {
   private readonly api = inject(ApiHttpService);
-  private readonly chatbotBaseUrl = 'chatbot'; // Base path for chatbot API
+  private readonly chatbotBaseUrl = 'chatbot';
 
-  /**
-   * Sends a message to the chatbot and receives a response.
-   * @param message The user's message.
-   * @returns An Observable of ChatResponse.
-   */
-  ask(message: string): Observable<ChatResponse> {
-    return this.api.postTo<ChatResponse>(this.api.chatbotBase, `${this.chatbotBaseUrl}/ask`, { message });
+  ask(userId: string, message: string): Observable<ChatResponse> {
+    return this.api
+      .postTo<{
+        userId: string;
+        message: string;
+        response: string;
+        intent: string;
+        createdAt: string;
+      }>(this.api.chatbotBase, `${this.chatbotBaseUrl}/messages`, { userId, message })
+      .pipe(
+        map((backendResponse) => ({
+          answer: backendResponse.response,
+          intent: toFrontendIntent(backendResponse.intent),
+          suggestions: [],
+          sources: [],
+        })),
+      );
   }
 
-  /**
-   * Retrieves the chat history for a given user.
-   * @param userId The ID of the user.
-   * @param page The page number for pagination (0-indexed).
-   * @param size The number of messages per page.
-   * @returns An Observable of ChatHistoryPage.
-   */
   getHistory(userId: string, page: number = 0, size: number = 20): Observable<ChatHistoryPage> {
     const params = { page: page.toString(), size: size.toString() };
-    return this.api.getFrom<ChatHistoryPage>(this.api.chatbotBase, `${this.chatbotBaseUrl}/history/${userId}`, params);
+    return this.api.getFrom<ChatHistoryPage>(
+      this.api.chatbotBase,
+      `${this.chatbotBaseUrl}/history/${userId}`,
+      params,
+    );
   }
 }

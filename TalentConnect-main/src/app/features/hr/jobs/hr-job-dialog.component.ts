@@ -290,6 +290,24 @@ export class HrJobDialogComponent {
        const date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
        return date.toISOString();
      };
+
+     let effectiveStatus = val.status as JobOffer['status'];
+     const effectiveClosingAt = toISODate(val.closingAt);
+
+     // If closingAt is set and is in the past, force status to CLOSED
+     if (effectiveClosingAt) {
+       const closingDate = new Date(effectiveClosingAt);
+       const now = new Date();
+       // Compare only dates, ignore time for "past date" logic
+       // For UTC comparison, we should use UTC methods
+       const closingDateUTC = new Date(closingDate.getUTCFullYear(), closingDate.getUTCMonth(), closingDate.getUTCDate());
+       const nowUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+
+       if (closingDateUTC.getTime() < nowUTC.getTime()) {
+         effectiveStatus = 'CLOSED';
+       }
+     }
+
      const job: Partial<JobOffer> = {
        ...this.data.job,
        title: val.title!,
@@ -297,7 +315,7 @@ export class HrJobDialogComponent {
        location: val.location!,
        employmentType: val.employmentType as JobOffer['employmentType'],
        seniority: val.seniority as JobOffer['seniority'],
-       status: val.status as JobOffer['status'],
+       status: effectiveStatus, // Use the potentially adjusted status
        description: val.description!,
        requirements:
          val.requirementsText
@@ -310,7 +328,7 @@ export class HrJobDialogComponent {
            .map((s) => s.trim())
            .filter(Boolean) ?? [],
        publishedAt: toISODate(val.publishedAt),
-       closingAt: toISODate(val.closingAt),
+       closingAt: effectiveClosingAt, // Use the converted closingAt
        hiringManager: val.hiringManager ?? '',
      };
      this.dialogRef.close(job);

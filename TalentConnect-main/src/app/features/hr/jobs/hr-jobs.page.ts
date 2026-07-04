@@ -25,7 +25,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 import { JobsAdapter } from '../../../data-access/api/adapters/jobs.adapter';
 import { JobOffer } from '../../../data-access/models/portal.models';
-import { StatusChipComponent } from '../../../shared/ui/status-chip.component';
 import {
   SkeletonListComponent,
   EmptyStateComponent,
@@ -125,8 +124,9 @@ import { HrJobDialogComponent } from './hr-job-dialog.component';
                      [class.status-draft]="row.status === 'DRAFT'"
                      [class.status-open]="row.status === 'OPEN'"
                      [class.status-closed]="row.status === 'CLOSED'"
+                     [class.status-archived]="row.status === 'ARCHIVED'"
                    >
-                     {{ row.status === 'DRAFT' ? 'Brouillon' : (row.status === 'OPEN' ? 'Ouvert' : 'Fermé') }}
+                     {{ row.status === 'DRAFT' ? 'Brouillon' : (row.status === 'OPEN' ? 'Ouvert' : (row.status === 'CLOSED' ? 'Fermé' : 'Archivé')) }}
                      <mat-icon>arrow_drop_down</mat-icon>
                    </button>
                    <mat-menu #statusMenu="matMenu">
@@ -141,6 +141,10 @@ import { HrJobDialogComponent } from './hr-job-dialog.component';
                      <button mat-menu-item (click)="updateJobStatus(row.id, 'CLOSED')" [disabled]="row.status === 'CLOSED'">
                        <mat-icon>block</mat-icon>
                        <span>Fermé</span>
+                     </button>
+                     <button mat-menu-item (click)="updateJobStatus(row.id, 'ARCHIVED')" [disabled]="row.status === 'ARCHIVED'">
+                       <mat-icon>archive</mat-icon>
+                       <span>Archivé</span>
                      </button>
                    </mat-menu>
                  </td>
@@ -172,6 +176,7 @@ import { HrJobDialogComponent } from './hr-job-dialog.component';
                     color="warn"
                     (click)="closeJob(row.id)"
                     aria-label="Cl&ocirc;turer l'offre"
+                    [disabled]="row.status === 'CLOSED' || row.status === 'ARCHIVED'"
                   >
                     <mat-icon>block</mat-icon>
                   </button>
@@ -268,6 +273,10 @@ import { HrJobDialogComponent } from './hr-job-dialog.component';
       .status-closed {
         background: rgba(239, 68, 68, 0.12) !important;
         color: #b91c1c !important;
+      }
+      .status-archived {
+        background: rgba(100, 116, 139, 0.12) !important;
+        color: #475569 !important;
       }
       @media (max-width: 900px) {
         .head-row {
@@ -445,24 +454,26 @@ export class HrJobsPageComponent implements OnInit, AfterViewInit {
   }
 
   protected closeJob(id: string): void {
-    // Get the current job to preserve its data
     const currentJob = this.allJobs.find((j) => j.id === id);
     if (!currentJob) return;
 
-     // Use updateJob with status CLOSED - send the full job payload
-     // This ensures all required fields are sent to the backend
-     this.jobsAdapter.updateJob(id, { ...currentJob, status: 'CLOSED' }).subscribe({
-       next: (updated) => {
-         this.jobsAdapter.refreshCache();
-         this.allJobs = this.allJobs.map((j) => (j.id === id ? updated : j));
-         // Force table refresh
-         this.dataSource.data = [...this.allJobs];
-         this.applyStatusFilter(this.statusFilterCtrl.value);
-         this.toast.open('Offre clôturée', '', { duration: 2500 });
-       },
+    // Set closingAt to now (or slightly in the past) to trigger backend's CLOSED status logic
+    const now = new Date();
+    const pastDate = new Date(now.getTime() - 1000); // 1 second in the past
+    const closingAt = pastDate.toISOString();
+
+    // Send the update with the new closingAt and current status (backend will derive CLOSED)
+    this.jobsAdapter.updateJob(id, { ...currentJob, closingAt: closingAt }).subscribe({
+      next: (updated) => {
+        this.jobsAdapter.refreshCache();
+        this.allJobs = this.allJobs.map((j) => (j.id === id ? updated : j));
+        this.dataSource.data = [...this.allJobs]; // Force table refresh
+        this.applyStatusFilter(this.statusFilterCtrl.value);
+        this.toast.open('Offre clôturée par date.', '', { duration: 2500 });
+      },
       error: (err) => {
-        console.error('Error closing job:', err);
-        this.toast.open('Impossible de clôturer cette offre.', 'OK', { duration: 3000 });
+        console.error('Error closing job by date:', err);
+        this.toast.open('Impossible de clôturer cette offre par date.', 'OK', { duration: 3000 });
       },
     });
   }
@@ -471,22 +482,42 @@ export class HrJobsPageComponent implements OnInit, AfterViewInit {
     const currentJob = this.allJobs.find((j) => j.id === id);
     if (!currentJob) return;
 
-    // Use updateJob (PUT) instead of patchStatus which causes 500 error
-    this.jobsAdapter.updateJob(id, { ...currentJob, status: newStatus as any }).subscribe({
+    // If setting to CLOSED, also set closingAt to a past date to align with backend logic
+    let updatedClosingAt = currentJob.closingAt;
+    if (newStatus === 'CLOSED') {
+      const now = new Date();
+      const pastDate = new Date(now.getTime() - 1000); // 1 second in the past
+      updatedClosingAt = pastDate.toISOString();
+    } else if (newStatus === 'OPEN' && currentJob.status === 'CLOSED') {
+      // If reopening a closed job, clear closingAt or set to a future date if desired
+      // For now, let's clear it if it was closed by date
+      updatedClosingAt = null;
+    }
+
+
+    this.jobsAdapter.updateJob(id, { ...currentJob, status: newStatus as any, closingAt: updatedClosingAt }).subscribe({
       next: (updated) => {
         this.jobsAdapter.refreshCache();
         this.allJobs = this.allJobs.map((j) => (j.id === id ? updated : j));
         // Force table refresh
         this.dataSource.data = [...this.allJobs];
         this.applyStatusFilter(this.statusFilterCtrl.value);
-        const statusLabel = newStatus === 'DRAFT' ? 'Brouillon' : (newStatus === 'OPEN' ? 'Ouvert' : 'Fermé');
+        const statusLabel =
+          newStatus === 'DRAFT'
+            ? 'Brouillon'
+            : newStatus === 'OPEN'
+              ? 'Ouvert'
+              : newStatus === 'CLOSED'
+                ? 'Fermé'
+                : 'Archivé';
         this.toast.open(`Statut mis à jour: ${statusLabel}`, '', { duration: 2500 });
       },
       error: (err: { status?: number }) => {
         console.error('Error updating job status:', err);
-        const msg = err.status === 400
-          ? 'Statut invalide. Veuillez vérifier votre sélection.'
-          : 'Impossible de mettre à jour le statut.';
+        const msg =
+          err.status === 400
+            ? 'Statut invalide. Veuillez vérifier votre sélection.'
+            : 'Impossible de mettre à jour le statut.';
         this.toast.open(msg, 'OK', { duration: 4000 });
       },
     });

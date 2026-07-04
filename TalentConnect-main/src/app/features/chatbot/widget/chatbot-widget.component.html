@@ -1,39 +1,72 @@
 <div class="chatbot-widget">
-  <div class="chatbot-header">
-    <h3>Chatbot RH</h3>
-    <mat-icon>chat</mat-icon>
-  </div>
+  <button
+    mat-fab
+    color="primary"
+    class="chat-toggle"
+    type="button"
+    (click)="toggle()"
+    [attr.aria-expanded]="isOpen()"
+  >
+    <mat-icon>{{ isOpen() ? 'close' : 'chat' }}</mat-icon>
+  </button>
 
-  <div class="chatbot-messages" #scrollContainer>
-    @for (message of messages(); track message.id) {
-      <div class="message-bubble" [class.user-message]="message.sender === 'user'" [class.bot-message]="message.sender === 'bot'">
-        <div class="message-content">
-          <p>{{ message.text }}</p>
-          @if (message.sources && message.sources.length > 0) {
-            <div class="message-sources">
-              <small>Sources: {{ message.sources.join(', ') }}</small>
-            </div>
-          }
+  @if (isOpen()) {
+    <section class="chat-panel">
+      <header class="chat-header">
+        <div class="chat-header-copy">
+          <span class="eyebrow">Assistant centralisé</span>
+          <strong>TalentConnect AI</strong>
+          <p>Offres, candidatures, profil et cooptation en temps réel</p>
         </div>
-        <small class="message-timestamp">{{ message.timestamp | date:'shortTime' }}</small>
-      </div>
-    }
-    @if (isLoading() && messages().length === 0) {
-      <div class="loading-indicator">
-        <mat-spinner [diameter]="24"></mat-spinner>
-        <span>Chargement de l'historique...</span>
-      </div>
-    }
-  </div>
-
-  <div class="chatbot-input-area">
-    <form (ngSubmit)="sendMessage()"> <!-- CHANGEMENT ICI: [formGroup] supprimé -->
-      <mat-form-field appearance="outline" class="message-input">
-        <input matInput placeholder="Posez votre question..." [formControl]="messageControl" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5" /> <!-- CHANGEMENT ICI: [formControl] au lieu de formControlName -->
-        <button mat-icon-button matSuffix type="submit" [disabled]="messageControl.invalid || isLoading()" matTooltip="Envoyer">
-          <mat-icon>send</mat-icon>
+        <button mat-icon-button type="button" (click)="toggle()" aria-label="Fermer le chatbot">
+          <mat-icon>close</mat-icon>
         </button>
-      </mat-form-field>
-    </form>
-  </div>
+      </header>
+
+      <div class="chat-messages" aria-live="polite">
+        @if (isLoading()) {
+          <div class="typing-row">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        }
+        @for (message of messages(); track message.id) {
+          <article
+            class="message"
+            [class.user]="message.sender === 'user'"
+          >
+            <p>{{ message.text }}</p>
+            @if (message.sources && message.sources.length) {
+              <small>Sources : {{ message.sources.join(' • ') }}</small>
+            }
+          </article>
+        }
+      </div>
+
+      <mat-chip-set class="chat-suggestions">
+        @for (suggestion of suggestions(); track suggestion) {
+          <button
+            mat-chip
+            type="button"
+            (click)="sendSuggestion(suggestion)"
+          >
+            {{ suggestion }}
+          </button>
+        }
+      </mat-chip-set>
+
+      <footer class="chat-footer">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Poser une question</mat-label>
+          <input
+            matInput
+            [formControl]="messageControl"
+            (keyup.enter)="sendMessage()"
+          />
+        </mat-form-field>
+        <button mat-flat-button color="primary" type="button" (click)="sendMessage()">Envoyer</button>
+      </footer>
+    </section>
+  }
 </div>

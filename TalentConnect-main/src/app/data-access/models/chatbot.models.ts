@@ -17,8 +17,16 @@ export interface ChatResponse {
   chatMessage?: ChatMessage; // The message saved by the bot, if applicable
 }
 
+// New interface matching the backend's ConversationResponse for history
+export interface ConversationResponse {
+  userId: string;
+  userMessage: string;
+  chatbotResponse: string;
+  timestamp: string;
+}
+
 export interface ChatHistoryPage {
-  content: ChatMessage[];
+  content: ConversationResponse[]; // Updated to use ConversationResponse
   totalElements: number;
   totalPages: number;
   size: number;
